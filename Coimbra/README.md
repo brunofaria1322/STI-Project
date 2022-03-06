@@ -101,12 +101,22 @@ openssl req -new -key private/vpn-clients.key -out openvpn/vpn-clients.csr -subj
 # Certificate
 openssl ca -in openvpn/vpn-clients.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/vpn-clients.crt
 ```
+
+
+# TODOOOO - AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+
 ## Certificates Revocation
 ```shell
 # Revokes name.crt certificate
 #openssl ca -revoke certs/name.crt -keyfile private/ca.key -cert certs/ca.crt
 # Creates new CRL file
 openssl ca -gencrl -keyfile private/ca.key -cert certs/ca.crt -out crl/ca.crl
+```
+## OSCP Responder
+```shell
+openssl ocsp -index index.txt -port 81 -rsigner certs/ca.crt -rkey private/ca.key -CA certs/ca.crt -text -out log.txt
+openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/vpn-clients.crt -url http://192.168.172.70:81 -resp_text
 ```
 ## OpenVPN Tunnel
 # server configuration file
