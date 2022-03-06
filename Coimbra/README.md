@@ -9,7 +9,7 @@ nano /etc/hostname
 ```sh
 nano /etc/ssl/openssl.cnf
 ```
-```nginx
+```xml
     ...
     ####################################################################
     [ CA_default ]
