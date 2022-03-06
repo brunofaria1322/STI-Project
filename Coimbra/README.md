@@ -106,5 +106,5 @@ openssl ca -in openvpn/vpn-clients.csr -cert certs/ca.crt -keyfile private/ca.ke
 # Revokes name.crt certificate
 #openssl ca -revoke certs/name.crt -keyfile private/ca.key -cert certs/ca.crt
 # Creates new CRL file
-openssl ca -gencrl -keyfile private/ca.key -cert certs/ca.crt -out crl.pem
+openssl ca -gencrl -keyfile private/ca.key -cert certs/ca.crt -out crl/ca.crl
 ```
