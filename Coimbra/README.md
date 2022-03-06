@@ -108,3 +108,38 @@ openssl ca -in openvpn/vpn-clients.csr -cert certs/ca.crt -keyfile private/ca.ke
 # Creates new CRL file
 openssl ca -gencrl -keyfile private/ca.key -cert certs/ca.crt -out crl/ca.crl
 ```
+## OpenVPN Tunnel
+# server configuration file
+```ssh
+nano /etc/openvpn/server/server.conf
+```
+```nginx
+# plugin openvpn-plugin-auth-pam.so openvpn
+local   192.168.172.70
+port    1194
+proto   udp
+dev     tun
+ca      /etc/pki/CA/ca.crt
+cert    /etc/pki/CA/certs/vpn-gatways.crt
+key     /etc/pki/CA/private/vpn-gateways.key
+dh      /etc/pki/CA/openvpn/dh2048.pem
+server  10.8.0.0 255.255.255.0
+# ifconfig-pool-persist ipp.txt
+# client-config-dir .
+# route 10.10.0.0 255.255.255.0
+# client-to-client
+# push "route 10.10.0.0 255.255.255.0"
+# keepalive 10 120
+# tls-auth /etc/pki/CA/private/ta.key 0
+# cipher AES-256-CBC
+# persist-key
+# persist-tun
+# status openvpn-status.log
+# verb 3
+# explicit-exit-notify 1
+# tls-verify OCSP_check.sh
+# script-security 2
+```
+```shell
+sudo openvpn --config /etc/openvpn/server.conf
+```
