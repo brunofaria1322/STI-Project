@@ -44,18 +44,8 @@ mkdir newcerts
 mkdir crl
 # Creates assymetric key associated to the AC
 openssl genrsa -des3 -out private/ca.key # pass: sti2022
-openssl req -new -key private/ca.key -out ca/ca.csr
-```
-```makefile
-    Country Name: PT
-    State or Province Name: Coimbra
-    Locality Name: Coimbra
-    Organization Name: UC
-    Organizational Unit Name: DEI
-    Common Name: CA-Coimbra
-    Email Address: ca-coimbra@gmail.com
-```
-```sh
+openssl req -new -key private/ca.key -out ca/ca.csr -subj \
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=CA-Coimbra/emailAddress=ca-coimbra@gmail.com
 # Creates final certificate with CSR, signed with RSA key previously created
 openssl x509 -req -days 3650 -in ca/ca.csr -out certs/ca.crt -signkey private/ca.key
 # Shows AC certificate content
@@ -75,18 +65,8 @@ mkdir apache
 # Criação da chave privada do Apache
 openssl genrsa -des3 -out private/apache.key # pass: sti2022
 # Criação do CSR
-openssl req -new -key private/apache.key -out apache/apache.csr
-```
-```makefile
-    Country Name: PT
-    State or Province Name: Coimbra
-    Locality Name: Coimbra
-    Organization Name: UC
-    Organizational Unit Name: DEI
-    Common Name: Apache-Lisboa
-    Email Address: apache-lisboa@gmail.com
-```
-```shell
+openssl req -new -key private/apache.key -out apache/apache.csr -subj \
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=Apache-Lisboa
 # Criação do certificado para o utilizador Apache
 openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt
 ```
@@ -103,35 +83,18 @@ openvpn --genkey secret private/ta.key
 #### VPN Gateways
 ```shell
 openssl genrsa -des3 -out private/vpn-gateways.key 2048 # pass: sti2022
-openssl req -new -key private/vpn-gateways.key -out openvpn/vpn-gateways.csr
-```
-```makefile
-    Country Name: PT
-    State or Province Name: Coimbra
-    Locality Name: Coimbra
-    Organization Name: UC
-    Organizational Unit Name: DEI
-    Common Name: VPN-Gateways
-    Email Address: vpn-gateways@gmail.com
-```
-```shell
+openssl req -new -key private/vpn-gateways.key -out openvpn/vpn-gateways.csr -subj \
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=VPN-Gateways
 openssl ca -in openvpn/vpn-gateways.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/vpn-gateways.crt
 ```
 #### VPN Clients
 ```shell
+# Key
 openssl genrsa -des3 -out private/vpn-clients.key 2048 # pass: sti2022
-openssl req -new -key private/vpn-clients.key -out openvpn/vpn-clients.csr
-```
-```makefile
-    Country Name: PT
-    State or Province Name: Coimbra
-    Locality Name: Coimbra
-    Organization Name: UC
-    Organizational Unit Name: DEI
-    Common Name: VPN-Clients
-    Email Address: vpn-clients@gmail.com
-```
-```shell
+# CSR
+openssl req -new -key private/vpn-clients.key -out openvpn/vpn-clients.csr -subj \
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=VPN-Clients
+# Cert
 openssl ca -in openvpn/vpn-clients.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/vpn-clients.crt
 ```
 ## Certificates Revocation
