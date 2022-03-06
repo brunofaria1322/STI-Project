@@ -42,11 +42,12 @@ mkdir ca
 mkdir certs
 mkdir newcerts
 mkdir crl
-# Creates assymetric key associated to the AC
+# Key
 openssl genrsa -des3 -out private/ca.key # pass: sti2022
+# CSR
 openssl req -new -key private/ca.key -out ca/ca.csr -subj \
 /C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=CA-Coimbra/emailAddress=ca-coimbra@gmail.com
-# Creates final certificate with CSR, signed with RSA key previously created
+# Certificate
 openssl x509 -req -days 3650 -in ca/ca.csr -out certs/ca.crt -signkey private/ca.key
 # Shows AC certificate content
 openssl x509 -in certs/ca.crt -text
@@ -62,12 +63,12 @@ echo 01 > crlnumber
 ```shell
 cd /etc/pki/CA/
 mkdir apache
-# Criação da chave privada do Apache
+# Key
 openssl genrsa -des3 -out private/apache.key # pass: sti2022
-# Criação do CSR
+# CSR
 openssl req -new -key private/apache.key -out apache/apache.csr -subj \
 /C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=Apache-Lisboa
-# Criação do certificado para o utilizador Apache
+# Certificate
 openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt
 ```
 ### VPNs
@@ -82,9 +83,12 @@ openvpn --genkey secret private/ta.key
 ```
 #### VPN Gateways
 ```shell
+# Key
 openssl genrsa -des3 -out private/vpn-gateways.key 2048 # pass: sti2022
+# CSR
 openssl req -new -key private/vpn-gateways.key -out openvpn/vpn-gateways.csr -subj \
 /C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=VPN-Gateways
+# Certificate
 openssl ca -in openvpn/vpn-gateways.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/vpn-gateways.crt
 ```
 #### VPN Clients
@@ -94,7 +98,7 @@ openssl genrsa -des3 -out private/vpn-clients.key 2048 # pass: sti2022
 # CSR
 openssl req -new -key private/vpn-clients.key -out openvpn/vpn-clients.csr -subj \
 /C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=VPN-Clients
-# Cert
+# Certificate
 openssl ca -in openvpn/vpn-clients.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/vpn-clients.crt
 ```
 ## Certificates Revocation
