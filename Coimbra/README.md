@@ -9,7 +9,7 @@ nano /etc/hostname
 ```sh
 nano /etc/ssl/openssl.cnf
 ```
-```conf
+```apacheconf
     ...
     ####################################################################
     [ CA_default ]
