@@ -58,16 +58,74 @@ openssl x509 -in certs/ca.crt -text
 touch index.txt
 echo 01 > serial
 echo 01 > crlnumber
+# arrumar os csr
+mkdir oscp
+mkdir apache
+mkdir openvpn
+```
+### OCSP
+```shell
+cd /etc/pki/CA/
+# Key
+openssl genrsa -des3 -out private/ocsp.key # pass: sti2022
+# CSR
+openssl req -new -key private/apache.key -out apache/apache.csr -subj \
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=OCSP/emailAddress=ocsp@gmail.com
+# Certificate
+openssl ca -in ocsp/ocsp.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/ocsp.crt
+```
+### Cert TUN0-Client
+```shell
+cd /etc/pki/CA/
+# Key
+openssl genrsa -des3 -out private/tun0-client.key # pass: sti2022
+# CSR
+openssl req -new -key private/tun0-client.key -out openvpn/tun0-client.csr -subj \
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN0-Client/emailAddress=tun0-client@gmail.com
+# Certificate
+openssl ca -in openvpn/tun0-client.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun0-client.crt
+```
+### Cert TUN0-Coimbra
+```shell
+cd /etc/pki/CA/
+# Key
+openssl genrsa -des3 -out private/tun0-coimbra.key # pass: sti2022
+# CSR
+openssl req -new -key private/tun0-coimbra.key -out openvpn/tun0-coimbra.csr -subj \
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN0-Coimbra/emailAddress=tun0-coimbra@gmail.com
+# Certificate
+openssl ca -in openvpn/tun0-coimbra.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun0-coimbra.crt
+```
+### Cert TUN1-Coimbra
+```shell
+cd /etc/pki/CA/
+# Key
+openssl genrsa -des3 -out private/tun1-coimbra.key # pass: sti2022
+# CSR
+openssl req -new -key private/tun1-coimbra.key -out openvpn/tun1-coimbra.csr -subj \
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN1-Coimbra/emailAddress=tun1-coimbra@gmail.com
+# Certificate
+openssl ca -in openvpn/tun1-coimbra.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-coimbra.crt
+```
+# Cert TUN1-Lisboa
+```shell
+cd /etc/pki/CA/
+# Key
+openssl genrsa -des3 -out private/tun1-lisboa.key # pass: sti2022
+# CSR
+openssl req -new -key private/tun1-lisboa.key -out openvpn/tun1-lisboa.csr -subj \
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN1-Lisboa/emailAddress=tun1-lisboa@gmail.com
+# Certificate
+openssl ca -in openvpn/tun1-lisboa.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-lisboa.crt
 ```
 ### Apache Server
 ```shell
 cd /etc/pki/CA/
-mkdir apache
 # Key
 openssl genrsa -des3 -out private/apache.key # pass: sti2022
 # CSR
 openssl req -new -key private/apache.key -out apache/apache.csr -subj \
-/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=Apache-Lisboa
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=Apache/emailAddress=apache@gmail.com
 # Certificate
 openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt
 ```
@@ -153,3 +211,18 @@ server  10.8.0.0 255.255.255.0
 ```shell
 sudo openvpn --config /etc/openvpn/server.conf
 ```
+
+# Notas
+## Cert TUN0-Client
+## Cert TUN0-Coimbra
+!!!! OSCP pode 192.168.172.70
+push route 0.0.0.0
+IP forward
+## Cert TUN1-Coimbra
+## Cert TUN1-Lisboa
+push route 10.8.0.0
+!!!! Apache nao tem de ter o endereço do 192.168.172.60, tem de ser o locla
+## Cert Apache
+## Cert OCSP
+
+!!! FAZER UM SERVICO PARA OS TUNEIS PARA ESTAR SEMPRE ATIVO
