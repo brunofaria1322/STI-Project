@@ -52,6 +52,12 @@ openssl x509 -req -days 3650 -in ca/ca.csr -out certs/ca.crt -signkey private/ca
 # Shows AC certificate content
 openssl x509 -in certs/ca.crt -text
 ```
+## OSCP Responder
+```shell
+openssl ocsp -index index.txt -port 81 -rsigner certs/ca.crt -rkey private/ca.key -CA certs/ca.crt -text -out log.txt
+# Verify certificates
+#openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/name.crt -url http://192.168.172.70:81 -resp_text
+```
 ## Certificates Generation
 ```shell
 # Diretorias em falta na diretoria CA
@@ -171,11 +177,6 @@ openssl ca -in openvpn/vpn-clients.csr -cert certs/ca.crt -keyfile private/ca.ke
 # Creates new CRL file
 openssl ca -gencrl -keyfile private/ca.key -cert certs/ca.crt -out crl/ca.crl
 ```
-## OSCP Responder
-```shell
-openssl ocsp -index index.txt -port 81 -rsigner certs/ca.crt -rkey private/ca.key -CA certs/ca.crt -text -out log.txt
-openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/vpn-clients.crt -url http://192.168.172.70:81 -resp_text
-```
 ## OpenVPN Tunnel
 # server configuration file
 ```ssh
@@ -224,5 +225,6 @@ push route 10.8.0.0
 !!!! Apache nao tem de ter o endereço do 192.168.172.60, tem de ser o locla
 ## Cert Apache
 ## Cert OCSP
+!!!!! CUIDADO COM O BIND DOS TUNEIS OS PORTES TÊM DE SER DIFERENTES
 
 !!! FAZER UM SERVICO PARA OS TUNEIS PARA ESTAR SEMPRE ATIVO
