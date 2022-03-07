@@ -55,3 +55,10 @@ CRIAR CERTIFICADOS APENAS DEPOIS DO OCSP!!!!!!!!!!!!!!!!!!
 	
 Coimbra tem que fazer IP Forward para RW chegar a Lisboa - rota para a 10.10.0.0
 	NAT para mudar o source id??? (Snat??)
+	
+	
+para dar nome a ips
+/etc/hosts
+	endereço_ip  url/nome ??
+	#sempre que usar o "nome" vai para o endereço
+	10.0.0.1 APACHE.STI.PT

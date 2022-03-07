@@ -6,7 +6,7 @@
 sudo nano /etc/hostname
 ```
 
-<!-- teste comentário -->
+<!-- Cena do OCSP -->
 
 ## CA Creation
 ```sh
