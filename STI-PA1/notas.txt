@@ -1,4 +1,4 @@
-Fazer um serviço para meter tudo logo a correr
+Fazer um serviço para meter tudo logo a correr tanto para as VPNS como para o OCSP (Apache precisa??)
 
 VM1
 	-Road Warrior
@@ -23,7 +23,7 @@ VM3
 	
 	~ APACHE
 	
-(Rede entre VMs "internet") - ips no 192.168.172.0/24 (dá para mudar no vmware)
+(Rede entre VMs "internet") - ips no 192.168.172.0/24 (dá para mudar no vmware) -> (VMWare Workstation) Edit -> Virtual Network Editor... -> Change Settings (for admin ) -> Change VMNet 8 subnet IP
 
 
 Túneis
@@ -35,14 +35,14 @@ VM2 -> VM3 = OpenVPN (10.10.0.0/24)
 
 !!Certificados transferidos MANUALMENTE!!
 Certificados:
-	lis
+	lisboa
 		OCSP
 		SERVER VPN 0
 		SERVER VPN 1
-	Coimb
+	Coimbra
 		APACHE
 		CLIENT VPN1
-	RW
+	RoadWarrior
 		CLIENT VPN0
 		
 	
