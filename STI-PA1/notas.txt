@@ -9,7 +9,7 @@ VM2
 	- Coimbra
 	
 	. Servidor para Warrior - Coimbra (SERVER / TUN 0)
-	. Cliente para Lisboa - Coimbra (SERVER / TUN 1)
+	. Cliente para Lisboa - Coimbra (SERVER / TUN 1) !Atenção a este segundo... vai tentar fazer bind no ip que já está o servidor *Ver maneira de este não fazer bind no porto default* !
 	
 	~ OCSP (openSSL)
 	
@@ -45,6 +45,7 @@ Certificados:
 	
 
 CRIAR CERTIFICADOS APENAS DEPOIS DO OCSP!!!!!!!!!!!!!!!!!!
+	- não inclui certificado da autoridade
 
 
 
