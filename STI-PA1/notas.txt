@@ -2,11 +2,13 @@ Fazer um serviço para meter tudo logo a correr
 
 VM1
 	-Road Warrior
+		ip: 192.168.172.50
 	
 	. Client!! (CLIENT / TUN 0)
 	
 VM2
 	- Coimbra
+		ip: 192.168.172.70
 	
 	. Servidor para Warrior - Coimbra (SERVER / TUN 0)
 	. Cliente para Lisboa - Coimbra (SERVER / TUN 1) !Atenção a este segundo... vai tentar fazer bind no ip que já está o servidor *Ver maneira de este não fazer bind no porto default* !
@@ -15,6 +17,7 @@ VM2
 	
 VM3
 	- Lisboa
+		ip: 192.168.172.60
 	
 	. Servidor para Lisboa - Coimbra (CLIENT / TUN 0 ?)
 	
@@ -30,7 +33,7 @@ VM1 -> VM2 = OpenVPN (10.8.0.0/24)
 VM2 -> VM3 = OpenVPN (10.10.0.0/24)
 
 
-!!Certificados transferidos manualmente!!
+!!Certificados transferidos MANUALMENTE!!
 Certificados:
 	lis
 		OCSP
