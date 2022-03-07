@@ -1,0 +1,53 @@
+Fazer um serviço para meter tudo logo a correr
+
+VM1
+	-Road Warrior
+	
+	. Client!! (CLIENT / TUN 0)
+	
+VM2
+	- Coimbra
+	
+	. Servidor para Warrior - Coimbra (SERVER / TUN 0)
+	. Cliente para Lisboa - Coimbra (SERVER / TUN 1)
+	
+	~ OCSP (openSSL)
+	
+VM3
+	- Lisboa
+	
+	. Servidor para Lisboa - Coimbra (CLIENT / TUN 0 ?)
+	
+	~ APACHE
+	
+(Rede entre VMs "internet") - ips no 192.168.172.0/24 (dá para mudar no vmware)
+
+
+Túneis
+VM1 -> VM2 = OpenVPN (10.8.0.0/24)
+	.com TOTP
+	
+VM2 -> VM3 = OpenVPN (10.10.0.0/24)
+
+
+!!Certificados transferidos manualmente!!
+Certificados:
+	lis
+		OCSP
+		SERVER VPN 0
+		SERVER VPN 1
+	Coimb
+		APACHE
+		CLIENT VPN1
+	RW
+		CLIENT VPN0
+		
+	
+
+CRIAR CERTIFICADOS APENAS DEPOIS DO OCSP!!!!!!!!!!!!!!!!!!
+
+
+
+	
+Coimbra tem que fazer IP Forward para RW chegar a Lisboa - rota para a 10.10.0.0
+	NAT para mudar o source id??? (Snat??)
