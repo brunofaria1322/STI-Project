@@ -3,7 +3,7 @@
 1. Set IPv4 address to `192.168.172.70` with mask `255.255.255.0`
 2. Set the hostname to `coimbra`
 ```sh
-nano /etc/hostname
+sudo nano /etc/hostname
 ```
 ## CA Creation
 ```sh
