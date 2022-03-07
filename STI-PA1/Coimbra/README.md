@@ -6,7 +6,7 @@
 sudo nano /etc/hostname
 ```
 
-<>(teste comentário)
+<!-- teste comentário -->
 
 ## CA Creation
 ```sh
