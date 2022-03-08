@@ -42,6 +42,10 @@ mkdir ca
 mkdir certs
 mkdir newcerts
 mkdir crl
+# Diretorias em falta na diretoria CA
+touch index.txt
+echo 01 > serial
+echo 01 > crlnumber
 # Key
 openssl genrsa -des3 -out private/ca.key # pass: sti2022
 # CSR
@@ -53,32 +57,52 @@ openssl x509 -req -days 3650 -in ca/ca.csr -out certs/ca.crt -signkey private/ca
 openssl x509 -in certs/ca.crt -text
 ```
 ## OSCP Responder
-```shell
-openssl ocsp -index index.txt -port 81 -rsigner certs/ca.crt -rkey private/ca.key -CA certs/ca.crt -text -out log.txt
-# Verify certificates
-#openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/name.crt -url http://192.168.172.70:81 -resp_text
-```
-## Certificates Generation
-```shell
-# Diretorias em falta na diretoria CA
-touch index.txt
-echo 01 > serial
-echo 01 > crlnumber
-# arrumar os csr
-mkdir oscp
-mkdir apache
-mkdir openvpn
-```
-### OCSP
+### OCSP Certificate
 ```shell
 cd /etc/pki/CA/
+mkdir ocsp
 # Key
 openssl genrsa -des3 -out private/ocsp.key # pass: sti2022
 # CSR
-openssl req -new -key private/apache.key -out apache/apache.csr -subj \
+openssl req -new -key private/ocsp.key -out ocsp/ocsp.csr -subj \
 /C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=OCSP/emailAddress=ocsp@gmail.com
 # Certificate
 openssl ca -in ocsp/ocsp.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/ocsp.crt
+```
+### Test OCSP Responder
+```shell
+openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text -out log.txt
+# Verify certificates
+#openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/name.crt -url http://192.168.172.70:81 -resp_text
+```
+### OCSP Service
+```shell
+cd /lib/systemd/system
+sudo touch ocsp-coimbra.service
+echo "
+[Unit]
+Description=OCSP Responder of Coimbra
+After=multi-user.target
+
+[Service]
+User=root
+Type=idle
+WorkingDirectory=/etc/pki/CA
+ExecStart=bash openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text -out log.txt
+
+[Install]
+WantedBy=multi-user.target
+" > ocsp-coimbra.service
+sudo systemctl daemon-reload
+sudo systemctl enable ocsp-coimbra.service
+sudo systemctl start ocsp-coimbra.service
+# check if working
+sudo systemctl status ocsp-coimbra.service
+```
+## Certificates Generation
+```shell
+mkdir apache
+mkdir openvpn
 ```
 ### Cert TUN0-Client
 ```shell
