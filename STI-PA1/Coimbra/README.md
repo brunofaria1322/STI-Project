@@ -3,11 +3,8 @@
 1. Set IPv4 address to `192.168.172.70` with mask `255.255.255.0`
 2. Set the hostname to `coimbra`
 ```sh
-sudo nano /etc/hostname
+nano /etc/hostname
 ```
-
-<!-- Cena do OCSP -->
-
 ## CA Creation
 ```sh
 nano /etc/ssl/openssl.cnf
@@ -72,35 +69,39 @@ openssl req -new -key private/ocsp.key -out ocsp/ocsp.csr -subj \
 # Certificate
 openssl ca -in ocsp/ocsp.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/ocsp.crt
 ```
-### Test OCSP Responder
+### Run OCSP Responder
 ```shell
+cd /etc/pki/CA/
 openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text -out log.txt
 # Verify certificates
 #openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/name.crt -url http://192.168.172.70:81 -resp_text
 ```
 ### OCSP Service
 ```shell
-cd /lib/systemd/system
-sudo touch ocsp-coimbra.service
-echo "
-[Unit]
-Description=OCSP Responder of Coimbra
-After=multi-user.target
+#cd /etc/pki/CA/
+# ! desencriptar a chave????? Unica forma de meter num serviço
+#openssl rsa -in private/ocsp.key -out private/new_ocsp.key
+#cd /lib/systemd/system
+#sudo touch ocsp-coimbra.service
+#echo "
+#[Unit]
+#Description=OCSP Responder of Coimbra
+#After=multi-user.target
 
-[Service]
-User=root
-Type=idle
-WorkingDirectory=/etc/pki/CA
-ExecStart=bash openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text -out log.txt
+#[Service]
+#User=root
+#Type=idle
+#WorkingDirectory=/etc/pki/CA
+#ExecStart=openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/new_ocsp.key -CA certs/ca.crt -text -out log.txt
 
-[Install]
-WantedBy=multi-user.target
-" > ocsp-coimbra.service
-sudo systemctl daemon-reload
-sudo systemctl enable ocsp-coimbra.service
-sudo systemctl start ocsp-coimbra.service
+#[Install]
+#WantedBy=multi-user.target
+#" > ocsp-coimbra.service
+#sudo systemctl daemon-reload
+#sudo systemctl enable ocsp-coimbra.service
+#sudo systemctl start ocsp-coimbra.service
 # check if working
-sudo systemctl status ocsp-coimbra.service
+#sudo systemctl status ocsp-coimbra.service
 ```
 ## Certificates Generation
 ```shell
