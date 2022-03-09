@@ -164,7 +164,7 @@ cd /etc/openvpn/
 touch server.conf
 echo "
 local       192.168.172.70
-port        1169 # DIFFERENT FROM TUN1
+port        1195 # DIFFERENT FROM TUN1
 proto       udp
 dev         tun
 ca          /etc/pki/CA/certs/ca.crt
@@ -201,12 +201,19 @@ persist-tun
 ca          /etc/pki/CA/certs/ca.crt
 cert        /etc/pki/CA/certs/tun1-coimbra.crt
 key         /etc/pki/CA/private/tun1-coimbra.key
-remote-cert-tls server
 #tls-auth   /etc/pki/CA/private/ta.key 1
 cipher      AES-256-CBC
 verb        3
 " > client.conf
+# check config
 sudo openvpn --config client.conf
+sudo systemctl daemon-reload
+sudo systemctl start openvpn@client
+# wait for passphrase prompt
+systemd-tty-ask-password-agent --query
+# enter passphrase (sti2022)
+sudo systemctl enable openvpn@client
+sudo systemctl status openvpn@client
 ```
 
 ## Apache Server
