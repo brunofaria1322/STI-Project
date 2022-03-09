@@ -182,7 +182,16 @@ status      /var/log/openvpn/openvpn-status.log
 verb        3
 explicit-exit-notify 1
 " > server.conf
+# check config
 sudo openvpn --config server.conf
+# start service
+sudo systemctl daemon-reload
+sudo systemctl start openvpn@server
+# wait for passphrase prompt
+systemd-tty-ask-password-agent --query
+# enter passphrase (sti2022)
+sudo systemctl enable openvpn@server
+sudo systemctl status openvpn@server
 ```
 
 ### Config TUN1
@@ -207,6 +216,7 @@ verb        3
 " > client.conf
 # check config
 sudo openvpn --config client.conf
+# start service
 sudo systemctl daemon-reload
 sudo systemctl start openvpn@client
 # wait for passphrase prompt
