@@ -51,7 +51,6 @@ CRIAR CERTIFICADOS APENAS DEPOIS DO OCSP!!!!!!!!!!!!!!!!!!
 	- não inclui certificado da autoridade
 
 
-
 	
 Coimbra tem que fazer IP Forward para RW chegar a Lisboa - rota para a 10.10.0.0
 	NAT para mudar o source id??? (Snat??)
