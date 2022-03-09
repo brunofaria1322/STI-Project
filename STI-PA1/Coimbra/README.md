@@ -103,10 +103,16 @@ openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocs
 # check if working
 #sudo systemctl status ocsp-coimbra.service
 ```
-## Certificates Generation
+## OpenVPN Tunnels
 ```shell
+cd /etc/pki/CA/
 mkdir apache
 mkdir openvpn
+# diffie-hellmann
+openssl dhparam -out openvpn/dh2048.pem 2048
+# tls-auth
+# https://openvpn.net/community-resources/hardening-openvpn-security/
+sudo openvpn --genkey secret private/ta.key
 ```
 ### Cert TUN0-Client
 ```shell
@@ -141,7 +147,7 @@ openssl req -new -key private/tun1-coimbra.key -out openvpn/tun1-coimbra.csr -su
 # Certificate
 openssl ca -in openvpn/tun1-coimbra.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-coimbra.crt
 ```
-# Cert TUN1-Lisboa
+### Cert TUN1-Lisboa
 ```shell
 cd /etc/pki/CA/
 # Key
@@ -152,7 +158,59 @@ openssl req -new -key private/tun1-lisboa.key -out openvpn/tun1-lisboa.csr -subj
 # Certificate
 openssl ca -in openvpn/tun1-lisboa.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-lisboa.crt
 ```
-### Apache Server
+### Config TUN0
+```shell
+cd /etc/openvpn/
+touch server.conf
+echo "
+local       192.168.172.70
+port        1169 # DIFFERENT FROM TUN1
+proto       udp
+dev         tun
+ca          /etc/pki/CA/certs/ca.crt
+cert        /etc/pki/CA/certs/tun0-coimbra.crt
+key         /etc/pki/CA/private/tun0-coimbra.key
+dh          /etc/pki/CA/openvpn/dh2048.pem
+server      10.8.0.0 255.255.255.0
+ifconfig-pool-persist /var/log/openvpn/ipp.txt
+keepalive   10 120
+#tls-auth   /etc/pki/CA/private/ta.key 0 
+cipher      AES-256-CBC
+persist-key
+persist-tun
+status      /var/log/openvpn/openvpn-status.log
+verb        3
+explicit-exit-notify 1
+" > server.conf
+sudo openvpn --config server.conf
+```
+
+### Config TUN1
+```shell
+cd /etc/openvpn/
+touch client.conf
+echo "
+client
+dev         tun
+proto       udp
+remote      192.168.172.60 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca          /etc/pki/CA/certs/ca.crt
+cert        /etc/pki/CA/certs/tun1-coimbra.crt
+key         /etc/pki/CA/private/tun1-coimbra.key
+remote-cert-tls server
+#tls-auth   /etc/pki/CA/private/ta.key 1
+cipher      AES-256-CBC
+verb        3
+" > client.conf
+sudo openvpn --config client.conf
+```
+
+## Apache Server
+### Cert Apache 
 ```shell
 cd /etc/pki/CA/
 # Key
@@ -163,39 +221,54 @@ openssl req -new -key private/apache.key -out apache/apache.csr -subj \
 # Certificate
 openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt
 ```
-### VPNs
-```shell
-cd /etc/pki/CA/
-mkdir openvpn
-# diffie-hellmann
-openssl dhparam -out openvpn/dh2048.pem 2048
-# tls-auth
-# https://openvpn.net/community-resources/hardening-openvpn-security/
-openvpn --genkey secret private/ta.key
+
+
+
+
+# IGNORE ================================================
+
+
+
+
+## OpenVPN Tunnel
+# server configuration file
+```ssh
+nano /etc/openvpn/client.conf
 ```
-#### VPN Gateways
-```shell
-# Key
-openssl genrsa -des3 -out private/vpn-gateways.key 2048 # pass: sti2022
-# CSR
-openssl req -new -key private/vpn-gateways.key -out openvpn/vpn-gateways.csr -subj \
-/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=VPN-Gateways
-# Certificate
-openssl ca -in openvpn/vpn-gateways.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/vpn-gateways.crt
+```nginx
+# plugin openvpn-plugin-auth-pam.so openvpn
+local   192.168.172.70
+port    1194
+proto   udp
+dev     tun
+ca      /etc/pki/CA/ca.crt
+cert    /etc/pki/CA/certs/vpn-gatways.crt
+key     /etc/pki/CA/private/vpn-gateways.key
+dh      /etc/pki/CA/openvpn/dh2048.pem
+server  10.8.0.0 255.255.255.0
+# ifconfig-pool-persist ipp.txt
+# client-config-dir .
+# route 10.10.0.0 255.255.255.0
+# client-to-client
+# push "route 10.10.0.0 255.255.255.0"
+# keepalive 10 120
+# tls-auth /etc/pki/CA/private/ta.key 0
+# cipher AES-256-CBC
+# persist-key
+# persist-tun
+# status openvpn-status.log
+# verb 3
+# explicit-exit-notify 1
+# tls-verify OCSP_check.sh
+# script-security 2
 ```
-#### VPN Clients
 ```shell
-# Key
-openssl genrsa -des3 -out private/vpn-clients.key 2048 # pass: sti2022
-# CSR
-openssl req -new -key private/vpn-clients.key -out openvpn/vpn-clients.csr -subj \
-/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=VPN-Clients
-# Certificate
-openssl ca -in openvpn/vpn-clients.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/vpn-clients.crt
+sudo openvpn --config /etc/openvpn/server.conf
 ```
 
 
-# TODOOOO - AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+
 
 
 ## Certificates Revocation
@@ -208,7 +281,7 @@ openssl ca -gencrl -keyfile private/ca.key -cert certs/ca.crt -out crl/ca.crl
 ## OpenVPN Tunnel
 # server configuration file
 ```ssh
-nano /etc/openvpn/server/server.conf
+nano /etc/openvpn/server.conf
 ```
 ```nginx
 # plugin openvpn-plugin-auth-pam.so openvpn
@@ -256,3 +329,7 @@ push route 10.8.0.0
 !!!!! CUIDADO COM O BIND DOS TUNEIS OS PORTES TÊM DE SER DIFERENTES
 
 !!! FAZER UM SERVICO PARA OS TUNEIS PARA ESTAR SEMPRE ATIVO
+
+https://books.google.pt/books?id=_1MoDwAAQBAJ&pg=PA130&lpg=PA130&dq=systemd+pass+passphrse+openssl&source=bl&ots=CJpi1TxFVe&sig=ACfU3U2I-44hoS_LM-IRYgzGYLWXOMx4mQ&hl=en&sa=X&ved=2ahUKEwi29Zrt9rb2AhWN-aQKHapZC14Q6AF6BAgZEAM#v=onepage&q=systemd%20pass%20passphrse%20openssl&f=false
+
+https://openvpn.net/community-resources/how-to/
