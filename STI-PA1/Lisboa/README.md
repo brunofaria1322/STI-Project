@@ -44,3 +44,53 @@ systemd-tty-ask-password-agent --query
 sudo systemctl enable openvpn@server
 sudo systemctl status openvpn@server
 ```
+## Apache Server
+### Configure Apache with Certificate
+```shell
+cd /etc/apache2/sites-enabled
+sudo a2ensite default-ssl
+echo "
+<IfModule mod_ssl.c>
+    <VirtualHost _default_:443>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/html
+        ErrorLog \${APACHE_LOG_DIR}/error.log
+        CustomLog \${APACHE_LOG_DIR}/access.log combined
+        SSLEngine on
+        SSLCertificateFile      /etc/pki/CA/certs/apache.crt
+        SSLCertificateKeyFile   /etc/pki/CA/private/apache.key
+        SSLCACertificateFile    /etc/pki/CA/certs/ca.crt
+        <FilesMatch \"\.(cgi|shtml|phtml|php)\$\">
+            SSLOptions +StdEnvVars
+        </FilesMatch>
+        <Directory /usr/lib/cgi-bin>
+            SSLOptions +StdEnvVars
+        </Directory>
+    </VirtualHost>
+</IfModule>
+" >  default-ssl.conf
+cd /etc/
+echo "
+127.0.0.1       localhost 
+127.0.1.1       lisboa
+
+127.0.0.1       apache
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+" > hosts
+sudo service apache2 restart
+```
+### Install the CA on the browser and repeat the previous test
+1. Go to `Settings`
+2. Go to `Privacy & Security`
+3. Go to `Certificates`
+4. Click `View Certificate`
+5. Go to `Authorities`
+6. Click in `Import`
+7. Import `ca.crt`
+***Important***
+- URL needs to be the same name as the apache key
+- In this case try the connection with `https://apache`
