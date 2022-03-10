@@ -181,6 +181,8 @@ key         /etc/pki/CA/private/tun0-coimbra.key
 dh          /etc/pki/CA/openvpn/dh2048.pem
 server      10.8.0.0 255.255.255.0
 ifconfig-pool-persist /var/log/openvpn/ipp.txt
+push \"route 10.10.0.0 255.255.255.0\"
+push \"route 10.8.0.0 255.255.255.0\"
 keepalive   10 120
 #tls-auth   /etc/pki/CA/private/ta.key 0 
 cipher      AES-256-CBC
@@ -263,54 +265,14 @@ Example in Firefox:
 - In this case try the connection with `https://apache`
 
 ```sh
-#ainda tou a ber
-sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o tun0 -j MASQUERADE
+#enable ip forward
+sysctl -w net.ipv4.ip_forward=1
+#                                   -s ip_vpnIn     -o tunIn
+sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o tun1 -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -s 10.10.0.0/24 -o tun0 -j MASQUERADE
 ```
 
 # IGNORE ================================================
-
-
-
-
-## OpenVPN Tunnel
-# server configuration file
-```ssh
-nano /etc/openvpn/client.conf
-```
-```nginx
-# plugin openvpn-plugin-auth-pam.so openvpn
-local   192.168.172.70
-port    1194
-proto   udp
-dev     tun
-ca      /etc/pki/CA/ca.crt
-cert    /etc/pki/CA/certs/vpn-gatways.crt
-key     /etc/pki/CA/private/vpn-gateways.key
-dh      /etc/pki/CA/openvpn/dh2048.pem
-server  10.8.0.0 255.255.255.0
-# ifconfig-pool-persist ipp.txt
-# client-config-dir .
-# route 10.10.0.0 255.255.255.0
-# client-to-client
-# push "route 10.10.0.0 255.255.255.0"
-# keepalive 10 120
-# tls-auth /etc/pki/CA/private/ta.key 0
-# cipher AES-256-CBC
-# persist-key
-# persist-tun
-# status openvpn-status.log
-# verb 3
-# explicit-exit-notify 1
-# tls-verify OCSP_check.sh
-# script-security 2
-```
-```shell
-sudo openvpn --config /etc/openvpn/server.conf
-```
-
-
-
-
 
 
 ## Certificates Revocation
@@ -319,41 +281,6 @@ sudo openvpn --config /etc/openvpn/server.conf
 #openssl ca -revoke certs/name.crt -keyfile private/ca.key -cert certs/ca.crt
 # Creates new CRL file
 openssl ca -gencrl -keyfile private/ca.key -cert certs/ca.crt -out crl/ca.crl
-```
-## OpenVPN Tunnel
-# server configuration file
-```ssh
-nano /etc/openvpn/server.conf
-```
-```nginx
-# plugin openvpn-plugin-auth-pam.so openvpn
-local   192.168.172.70
-port    1194
-proto   udp
-dev     tun
-ca      /etc/pki/CA/ca.crt
-cert    /etc/pki/CA/certs/vpn-gatways.crt
-key     /etc/pki/CA/private/vpn-gateways.key
-dh      /etc/pki/CA/openvpn/dh2048.pem
-server  10.8.0.0 255.255.255.0
-# ifconfig-pool-persist ipp.txt
-# client-config-dir .
-# route 10.10.0.0 255.255.255.0
-# client-to-client
-# push "route 10.10.0.0 255.255.255.0"
-# keepalive 10 120
-# tls-auth /etc/pki/CA/private/ta.key 0
-# cipher AES-256-CBC
-# persist-key
-# persist-tun
-# status openvpn-status.log
-# verb 3
-# explicit-exit-notify 1
-# tls-verify OCSP_check.sh
-# script-security 2
-```
-```shell
-sudo openvpn --config /etc/openvpn/server.conf
 ```
 
 # Notas

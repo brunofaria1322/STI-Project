@@ -34,6 +34,7 @@ key         /etc/pki/CA/private/tun1-lisboa.key
 dh          /etc/pki/CA/openvpn/dh2048.pem
 server      10.10.0.0 255.255.255.0
 ifconfig-pool-persist /var/log/openvpn/ipp.txt
+push    \"route 10.8.0.0 255.255.255.0\"
 keepalive   10 120
 #tls-auth   /etc/pki/CA/private/ta.key 0 
 #cipher      AES-256-CBC
