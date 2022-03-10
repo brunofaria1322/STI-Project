@@ -8,8 +8,8 @@ nano /etc/hostname
 ```
 3. Copy Keys & Certs from Coimbra
 ```sh
-root@coimbra $ scp -r /etc/pki/CA <user>@<VM IP>:/home/<user>
-root@lisboa $ mv CA /etc/pki/CA
+sti@coimbra $ sudo scp -r /etc/pki/CA sti@192.168.172.60:~
+sti@lisboa:~$ sudo mv CA /etc/pki/CA
 ```
 ## OpenVPN Tunnel
 ```shell
@@ -47,7 +47,7 @@ sudo openvpn --config server.conf
 sudo systemctl daemon-reload
 sudo systemctl start openvpn@server
 # wait for passphrase prompt
-systemd-tty-ask-password-agent --query
+sudo systemd-tty-ask-password-agent --query
 # enter passphrase (sti2022)
 sudo systemctl enable openvpn@server
 sudo systemctl status openvpn@server
@@ -84,21 +84,15 @@ echo "
     </VirtualHost>
 </IfModule>
 " >  default-ssl.conf
-cd /etc/
-echo "
-127.0.0.1       localhost 
-127.0.1.1       lisboa
 
-127.0.0.1       apache
-
-# The following lines are desirable for IPv6 capable hosts
-::1     localhost ip6-localhost ip6-loopback
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-" > hosts
 sudo service apache2 restart
 ```
+
+### set "apache" name for IP 127.0.0.1
+Add `127.0.0.1        apache` line to `/etc/hosts`
+
 ### Install the CA on the browser and repeat the previous test
+Example in Firefox:
 1. Go to `Settings`
 2. Go to `Privacy & Security`
 3. Go to `Certificates`
