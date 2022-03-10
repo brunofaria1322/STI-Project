@@ -246,7 +246,31 @@ openssl req -new -key private/apache.key -out apache/apache.csr -subj \
 # Certificate
 openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt
 ```
+### set "apache" name for IP 10.9.0.1
+```shell
+echo "
+127.0.0.1       localhost 
+127.0.1.1       coimbra
 
+10.9.0.1        apache
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+" > hosts
+```
+### Install the CA on the browser and repeat the previous test
+1. Go to `Settings`
+2. Go to `Privacy & Security`
+3. Go to `Certificates`
+4. Click `View Certificate`
+5. Go to `Authorities`
+6. Click in `Import`
+7. Import `ca.crt`
+***Important***
+- URL needs to be the same name as the apache key
+- In this case try the connection with `https://apache`
 
 
 
