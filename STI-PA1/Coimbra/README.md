@@ -181,6 +181,7 @@ verb        3
 explicit-exit-notify 1
 tls-verify OCSP_check.sh
 " > server.conf
+
 # check config
 sudo openvpn --config server.conf
 # start service
