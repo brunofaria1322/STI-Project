@@ -153,6 +153,7 @@ openssl ca -in openvpn/tun1-lisboa.csr -cert certs/ca.crt -keyfile private/ca.ke
 ```shell
 cd /etc/pki/    # É propositado estar fora da diretoria CA
 wget https://raw.githubusercontent.com/OpenVPN/openvpn/master/contrib/OCSP_check/OCSP_check.sh
+sudo chmod 777 OCSP_check.sh
 ```
 ### Config TUN0
 ```shell
@@ -179,7 +180,7 @@ persist-tun
 status      /var/log/openvpn/openvpn-status.log
 verb        3
 explicit-exit-notify 1
-tls-verify OCSP_check.sh
+tls-verify /etc/pki/OCSP_check.sh
 " > server.conf
 
 # check config
