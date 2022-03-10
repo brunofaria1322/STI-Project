@@ -4,8 +4,10 @@
 2. Set the hostname to `client`
 ```sh
 nano /etc/hostname
+
 ```
 3. Copy Keys & Certs from Coimbra
+
 ```sh
 root@coimbra $ scp -r /etc/pki/CA <user>@<VM IP>:/home/<user>
 root@client $ mv CA /etc/pki/CA
