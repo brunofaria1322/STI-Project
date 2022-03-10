@@ -1,7 +1,8 @@
 # Lisboa Virtual Machine
 ## Initial Configuration
 1. Set IPv4 address to `192.168.172.60` with mask `255.255.255.0`
-2. Set the hostname to `lisboa`
+2. Create new Network Adaptor. Set IPv4 address to `10.10.0.1` with mask `255.255.255.0`
+3. Set the hostname to `lisboa`
 ```sh
 nano /etc/hostname
 ```
