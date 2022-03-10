@@ -12,3 +12,13 @@ nano /etc/hostname
 root@coimbra $ scp -r /etc/pki/CA <user>@<VM IP>:/home/<user>
 root@client $ mv CA /etc/pki/CA
 ```
+
+## OpenVPN Tunnel
+```shell
+#Install OpenVPN
+sudo apt-get install openvpn
+#Start Service
+sudo systemctl start openvpn
+sudo systemctl enable openvpn
+```
+### Config TUN0

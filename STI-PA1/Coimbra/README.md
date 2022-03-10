@@ -106,6 +106,13 @@ openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocs
 ```
 ## OpenVPN Tunnels
 ```shell
+#Install OpenVPN
+sudo apt-get install openvpn
+#Start Service
+sudo systemctl start openvpn
+sudo systemctl enable openvpn
+
+#-------------#
 cd /etc/pki/CA/
 mkdir apache
 mkdir openvpn
