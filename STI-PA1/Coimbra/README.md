@@ -33,6 +33,14 @@ nano /etc/ssl/openssl.cnf
 
     x509_extensions = usr_cert              # The extensions to add to the cert
     ...
+    [ usr_cert ]
+    ...
+    authorityInfoAccess          = OCSP;URI:http://127.0.0.1:81
+    
+    [ v3_OCSP ]
+    basicConstraints = CA:FALSE
+    keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+    extendedKeyUsage = OCSPSigning
 ```
 ```sh
 # Creates directories
@@ -48,14 +56,14 @@ touch index.txt
 echo 01 > serial
 echo 01 > crlnumber
 # Key
-openssl genrsa -des3 -out private/ca.key # pass: sti2022
+openssl genrsa -des3 -out private/ca.key  # pass: sti2022
 # CSR
 openssl req -new -key private/ca.key -out ca/ca.csr -subj \
-/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=CA-Coimbra/emailAddress=ca-coimbra@gmail.com
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=CA-Coimbra/emailAddress=ca-coimbra@gmail.com -passin pass:sti2022
 # Certificate
-openssl x509 -req -days 3650 -in ca/ca.csr -out certs/ca.crt -signkey private/ca.key
+openssl x509 -req -days 3650 -in ca/ca.csr -out certs/ca.crt -signkey private/ca.key -passin pass:sti2022
 # Shows AC certificate content
-openssl x509 -in certs/ca.crt -text
+#openssl x509 -in certs/ca.crt -text
 ```
 ## OSCP Responder
 ### OCSP Certificate
@@ -66,43 +74,17 @@ mkdir ocsp
 openssl genrsa -des3 -out private/ocsp.key # pass: sti2022
 # CSR
 openssl req -new -key private/ocsp.key -out ocsp/ocsp.csr -subj \
-/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=OCSP/emailAddress=ocsp@gmail.com
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=OCSP/emailAddress=ocsp@gmail.com -passin pass:sti2022
 # Certificate
-openssl ca -in ocsp/ocsp.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/ocsp.crt
+openssl ca -in ocsp/ocsp.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/ocsp.crt -extensions v3_OCSP -passin pass:sti2022
+# Shows AC certificate content
+#openssl x509 -in certs/ocsp.crt -text
 ```
 ### Run OCSP Responder
 ```shell
 cd /etc/pki/CA/
-openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text -out log.txt
-# Verify certificates
-#openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/name.crt -url http://192.168.172.70:81 -resp_text
-```
-### OCSP Service
-```shell
-#cd /etc/pki/CA/
-# ! desencriptar a chave????? Unica forma de meter num serviço
-#openssl rsa -in private/ocsp.key -out private/new_ocsp.key
-#cd /lib/systemd/system
-#sudo touch ocsp-coimbra.service
-#echo "
-#[Unit]
-#Description=OCSP Responder of Coimbra
-#After=multi-user.target
-
-#[Service]
-#User=root
-#Type=idle
-#WorkingDirectory=/etc/pki/CA
-#ExecStart=openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/new_ocsp.key -CA certs/ca.crt -text -out log.txt
-
-#[Install]
-#WantedBy=multi-user.target
-#" > ocsp-coimbra.service
-#sudo systemctl daemon-reload
-#sudo systemctl enable ocsp-coimbra.service
-#sudo systemctl start ocsp-coimbra.service
-# check if working
-#sudo systemctl status ocsp-coimbra.service
+touch log.txt
+openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text
 ```
 ## OpenVPN Tunnels
 ```shell
@@ -111,10 +93,7 @@ sudo apt-get install openvpn
 #Start Service
 sudo systemctl start openvpn
 sudo systemctl enable openvpn
-
-#-------------#
 cd /etc/pki/CA/
-mkdir apache
 mkdir openvpn
 # diffie-hellmann
 openssl dhparam -out openvpn/dh2048.pem 2048
@@ -129,9 +108,11 @@ cd /etc/pki/CA/
 openssl genrsa -des3 -out private/tun0-client.key # pass: sti2022
 # CSR
 openssl req -new -key private/tun0-client.key -out openvpn/tun0-client.csr -subj \
-/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN0-Client/emailAddress=tun0-client@gmail.com
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN0-Client/emailAddress=tun0-client@gmail.com -passin pass:sti2022
 # Certificate
-openssl ca -in openvpn/tun0-client.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun0-client.crt
+openssl ca -in openvpn/tun0-client.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun0-client.crt -passin pass:sti2022
+# Verify certificates
+#openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/tun0-client.crt -url http://127.0.0.1:81 -resp_text
 ```
 ### Cert TUN0-Coimbra
 ```shell
@@ -140,9 +121,11 @@ cd /etc/pki/CA/
 openssl genrsa -des3 -out private/tun0-coimbra.key # pass: sti2022
 # CSR
 openssl req -new -key private/tun0-coimbra.key -out openvpn/tun0-coimbra.csr -subj \
-/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN0-Coimbra/emailAddress=tun0-coimbra@gmail.com
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN0-Coimbra/emailAddress=tun0-coimbra@gmail.com -passin pass:sti2022
 # Certificate
-openssl ca -in openvpn/tun0-coimbra.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun0-coimbra.crt
+openssl ca -in openvpn/tun0-coimbra.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun0-coimbra.crt -passin pass:sti2022
+# Verify certificates
+#openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/tun0-coimbra.crt -url http://127.0.0.1:81 -resp_text
 ```
 ### Cert TUN1-Coimbra
 ```shell
@@ -151,9 +134,9 @@ cd /etc/pki/CA/
 openssl genrsa -des3 -out private/tun1-coimbra.key # pass: sti2022
 # CSR
 openssl req -new -key private/tun1-coimbra.key -out openvpn/tun1-coimbra.csr -subj \
-/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN1-Coimbra/emailAddress=tun1-coimbra@gmail.com
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN1-Coimbra/emailAddress=tun1-coimbra@gmail.com -passin pass:sti2022
 # Certificate
-openssl ca -in openvpn/tun1-coimbra.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-coimbra.crt
+openssl ca -in openvpn/tun1-coimbra.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-coimbra.crt -passin pass:sti2022
 ```
 ### Cert TUN1-Lisboa
 ```shell
@@ -162,9 +145,14 @@ cd /etc/pki/CA/
 openssl genrsa -des3 -out private/tun1-lisboa.key # pass: sti2022
 # CSR
 openssl req -new -key private/tun1-lisboa.key -out openvpn/tun1-lisboa.csr -subj \
-/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN1-Lisboa/emailAddress=tun1-lisboa@gmail.com
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=TUN1-Lisboa/emailAddress=tun1-lisboa@gmail.com -passin pass:sti2022
 # Certificate
-openssl ca -in openvpn/tun1-lisboa.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-lisboa.crt
+openssl ca -in openvpn/tun1-lisboa.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-lisboa.crt -passin pass:sti2022
+```
+### OSCP Check
+```shell
+cd /etc/pki/    # É propositado estar fora da diretoria CA
+wget https://raw.githubusercontent.com/OpenVPN/openvpn/master/contrib/OCSP_check/OCSP_check.sh
 ```
 ### Config TUN0
 ```shell
@@ -191,6 +179,7 @@ persist-tun
 status      /var/log/openvpn/openvpn-status.log
 verb        3
 explicit-exit-notify 1
+tls-verify OCSP_check.sh
 " > server.conf
 # check config
 sudo openvpn --config server.conf
@@ -240,13 +229,14 @@ sudo systemctl status openvpn@client
 ### Cert Apache 
 ```shell
 cd /etc/pki/CA/
+mkdir apache
 # Key
 openssl genrsa -des3 -out private/apache.key # pass: sti2022
 # CSR
 openssl req -new -key private/apache.key -out apache/apache.csr -subj \
-/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=Apache/emailAddress=apache@gmail.com
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=Apache/emailAddress=apache@gmail.com -passin pass:sti2022
 # Certificate
-openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt
+openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt -passin pass:sti2022
 ```
 ### set "apache" name for IP 10.10.0.1
 Add `10.10.0.1        apache` line to `/etc/hosts`
