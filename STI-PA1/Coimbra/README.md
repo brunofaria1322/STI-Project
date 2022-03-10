@@ -262,7 +262,10 @@ Example in Firefox:
 - URL needs to be the same name as the apache key
 - In this case try the connection with `https://apache`
 
-
+```sh
+#ainda tou a ber
+sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o tun0 -j MASQUERADE
+```
 
 # IGNORE ================================================
 
