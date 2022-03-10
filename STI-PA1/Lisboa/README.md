@@ -29,7 +29,7 @@ server      10.9.0.0 255.255.255.0
 ifconfig-pool-persist /var/log/openvpn/ipp.txt
 keepalive   10 120
 #tls-auth   /etc/pki/CA/private/ta.key 0 
-cipher      AES-256-CBC
+#cipher      AES-256-CBC
 persist-key
 persist-tun
 status      /var/log/openvpn/openvpn-status.log
@@ -44,6 +44,13 @@ systemd-tty-ask-password-agent --query
 # enter passphrase (sti2022)
 sudo systemctl enable openvpn@server
 sudo systemctl status openvpn@server
+
+#sudo systemctl stop openvpn@server
+#sudo systemctl disable openvpn@server
+#sudo killall openvpn
+
+echo 1 > /proc/sys/net/ipv4/ip_forward
+sudo iptables -t nat -A POSTROUTING -s 10.10.0.0/24 -o tun0 -j MASQUERADE
 ```
 ## Apache Server
 ### Configure Apache with Certificate
