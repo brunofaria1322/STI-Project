@@ -196,7 +196,7 @@ sudo openvpn --config server.conf
 sudo systemctl daemon-reload
 sudo systemctl start openvpn@server
 # wait for passphrase prompt
-systemd-tty-ask-password-agent --query
+sudo systemd-tty-ask-password-agent --query
 # enter passphrase (sti2022)
 sudo systemctl enable openvpn@server
 sudo systemctl status openvpn@server
@@ -228,7 +228,7 @@ sudo openvpn --config client.conf
 sudo systemctl daemon-reload
 sudo systemctl start openvpn@client
 # wait for passphrase prompt
-systemd-tty-ask-password-agent --query
+sudo systemd-tty-ask-password-agent --query
 # enter passphrase (sti2022)
 sudo systemctl enable openvpn@client
 sudo systemctl status openvpn@client
@@ -247,20 +247,10 @@ openssl req -new -key private/apache.key -out apache/apache.csr -subj \
 openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt
 ```
 ### set "apache" name for IP 10.9.0.1
-```shell
-echo "
-127.0.0.1       localhost 
-127.0.1.1       coimbra
+Add `10.9.0.1        apache` line to `/etc/hosts`
 
-10.9.0.1        apache
-
-# The following lines are desirable for IPv6 capable hosts
-::1     localhost ip6-localhost ip6-loopback
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-" > hosts
-```
 ### Install the CA on the browser and repeat the previous test
+Example in Firefox:
 1. Go to `Settings`
 2. Go to `Privacy & Security`
 3. Go to `Certificates`
