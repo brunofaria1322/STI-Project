@@ -179,7 +179,7 @@ ca          /etc/pki/CA/certs/ca.crt
 cert        /etc/pki/CA/certs/tun0-coimbra.crt
 key         /etc/pki/CA/private/tun0-coimbra.key
 dh          /etc/pki/CA/openvpn/dh2048.pem
-server      10.7.0.0 255.255.255.0
+server      10.8.0.0 255.255.255.0
 ifconfig-pool-persist /var/log/openvpn/ipp.txt
 keepalive   10 120
 #tls-auth   /etc/pki/CA/private/ta.key 0 
@@ -246,8 +246,8 @@ openssl req -new -key private/apache.key -out apache/apache.csr -subj \
 # Certificate
 openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt
 ```
-### set "apache" name for IP 10.9.0.1
-Add `10.9.0.1        apache` line to `/etc/hosts`
+### set "apache" name for IP 10.10.0.1
+Add `10.10.0.1        apache` line to `/etc/hosts`
 
 ### Install the CA on the browser and repeat the previous test
 Example in Firefox:
