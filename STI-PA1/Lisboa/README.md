@@ -1,6 +1,7 @@
 # Lisboa Virtual Machine
 ## Initial Configuration
 1. Set IPv4 address to `192.168.172.60` with mask `255.255.255.0`
+1. Set IPv4 address to `10.10.0.1` with mask `255.255.255.0`
 2. Set the hostname to `lisboa`
 ```sh
 nano /etc/hostname
@@ -24,7 +25,7 @@ ca          /etc/pki/CA/certs/ca.crt
 cert        /etc/pki/CA/certs/tun1-lisboa.crt
 key         /etc/pki/CA/private/tun1-lisboa.key
 dh          /etc/pki/CA/openvpn/dh2048.pem
-server      10.10.0.0 255.255.255.0
+server      10.9.0.0 255.255.255.0
 ifconfig-pool-persist /var/log/openvpn/ipp.txt
 keepalive   10 120
 #tls-auth   /etc/pki/CA/private/ta.key 0 

@@ -171,7 +171,7 @@ ca          /etc/pki/CA/certs/ca.crt
 cert        /etc/pki/CA/certs/tun0-coimbra.crt
 key         /etc/pki/CA/private/tun0-coimbra.key
 dh          /etc/pki/CA/openvpn/dh2048.pem
-server      10.8.0.0 255.255.255.0
+server      10.7.0.0 255.255.255.0
 ifconfig-pool-persist /var/log/openvpn/ipp.txt
 keepalive   10 120
 #tls-auth   /etc/pki/CA/private/ta.key 0 
