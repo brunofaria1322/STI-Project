@@ -36,7 +36,7 @@ nano /etc/ssl/openssl.cnf
     [ usr_cert ]
     ...
     authorityInfoAccess          = OCSP;URI:http://127.0.0.1:81
-    
+
     [ v3_OCSP ]
     basicConstraints = CA:FALSE
     keyUsage = nonRepudiation, digitalSignature, keyEncipherment
@@ -167,10 +167,10 @@ ca          /etc/pki/CA/certs/ca.crt
 cert        /etc/pki/CA/certs/tun0-coimbra.crt
 key         /etc/pki/CA/private/tun0-coimbra.key
 dh          /etc/pki/CA/openvpn/dh2048.pem
-server      10.7.0.0 255.255.255.0
+server      10.8.0.0 255.255.255.0
 ifconfig-pool-persist /var/log/openvpn/ipp.txt
 keepalive   10 120
-#tls-auth   /etc/pki/CA/private/ta.key 0 
+#tls-auth   /etc/pki/CA/private/ta.key 0
 cipher      AES-256-CBC
 persist-key
 persist-tun
@@ -224,7 +224,7 @@ sudo systemctl status openvpn@client
 ```
 
 ## Apache Server
-### Cert Apache 
+### Cert Apache
 ```shell
 cd /etc/pki/CA/
 mkdir apache
@@ -232,12 +232,12 @@ mkdir apache
 openssl genrsa -des3 -out private/apache.key # pass: sti2022
 # CSR
 openssl req -new -key private/apache.key -out apache/apache.csr -subj \
-/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=Apache/emailAddress=apache@gmail.com 
+/C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=Apache/emailAddress=apache@gmail.com
 # Certificate
 openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt
 ```
-### set "apache" name for IP 10.9.0.1
-Add `10.9.0.1        apache` line to `/etc/hosts`
+### set "apache" name for IP 10.10.0.1
+Add `10.10.0.1        apache` line to `/etc/hosts`
 
 ### Install the CA on the browser and repeat the previous test
 Example in Firefox:
@@ -251,3 +251,117 @@ Example in Firefox:
 ***Important***
 - URL needs to be the same name as the apache key
 - In this case try the connection with `https://apache`
+
+```sh
+#ainda tou a ber
+sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o tun0 -j MASQUERADE
+```
+
+# IGNORE ================================================
+
+
+
+
+## OpenVPN Tunnel
+# server configuration file
+```ssh
+nano /etc/openvpn/client.conf
+```
+```nginx
+# plugin openvpn-plugin-auth-pam.so openvpn
+local   192.168.172.70
+port    1194
+proto   udp
+dev     tun
+ca      /etc/pki/CA/ca.crt
+cert    /etc/pki/CA/certs/vpn-gatways.crt
+key     /etc/pki/CA/private/vpn-gateways.key
+dh      /etc/pki/CA/openvpn/dh2048.pem
+server  10.8.0.0 255.255.255.0
+# ifconfig-pool-persist ipp.txt
+# client-config-dir .
+# route 10.10.0.0 255.255.255.0
+# client-to-client
+# push "route 10.10.0.0 255.255.255.0"
+# keepalive 10 120
+# tls-auth /etc/pki/CA/private/ta.key 0
+# cipher AES-256-CBC
+# persist-key
+# persist-tun
+# status openvpn-status.log
+# verb 3
+# explicit-exit-notify 1
+# tls-verify OCSP_check.sh
+# script-security 2
+```
+```shell
+sudo openvpn --config /etc/openvpn/server.conf
+```
+
+
+
+
+
+
+## Certificates Revocation
+```shell
+# Revokes name.crt certificate
+#openssl ca -revoke certs/name.crt -keyfile private/ca.key -cert certs/ca.crt
+# Creates new CRL file
+openssl ca -gencrl -keyfile private/ca.key -cert certs/ca.crt -out crl/ca.crl
+```
+## OpenVPN Tunnel
+# server configuration file
+```ssh
+nano /etc/openvpn/server.conf
+```
+```nginx
+# plugin openvpn-plugin-auth-pam.so openvpn
+local   192.168.172.70
+port    1194
+proto   udp
+dev     tun
+ca      /etc/pki/CA/ca.crt
+cert    /etc/pki/CA/certs/vpn-gatways.crt
+key     /etc/pki/CA/private/vpn-gateways.key
+dh      /etc/pki/CA/openvpn/dh2048.pem
+server  10.8.0.0 255.255.255.0
+# ifconfig-pool-persist ipp.txt
+# client-config-dir .
+# route 10.10.0.0 255.255.255.0
+# client-to-client
+# push "route 10.10.0.0 255.255.255.0"
+# keepalive 10 120
+# tls-auth /etc/pki/CA/private/ta.key 0
+# cipher AES-256-CBC
+# persist-key
+# persist-tun
+# status openvpn-status.log
+# verb 3
+# explicit-exit-notify 1
+# tls-verify OCSP_check.sh
+# script-security 2
+```
+```shell
+sudo openvpn --config /etc/openvpn/server.conf
+```
+
+# Notas
+## Cert TUN0-Client
+## Cert TUN0-Coimbra
+!!!! OSCP pode 192.168.172.70
+push route 0.0.0.0
+IP forward
+## Cert TUN1-Coimbra
+## Cert TUN1-Lisboa
+push route 10.8.0.0
+!!!! Apache nao tem de ter o endereço do 192.168.172.60, tem de ser o locla
+## Cert Apache
+## Cert OCSP
+!!!!! CUIDADO COM O BIND DOS TUNEIS OS PORTES TÊM DE SER DIFERENTES
+
+!!! FAZER UM SERVICO PARA OS TUNEIS PARA ESTAR SEMPRE ATIVO
+
+https://books.google.pt/books?id=_1MoDwAAQBAJ&pg=PA130&lpg=PA130&dq=systemd+pass+passphrse+openssl&source=bl&ots=CJpi1TxFVe&sig=ACfU3U2I-44hoS_LM-IRYgzGYLWXOMx4mQ&hl=en&sa=X&ved=2ahUKEwi29Zrt9rb2AhWN-aQKHapZC14Q6AF6BAgZEAM#v=onepage&q=systemd%20pass%20passphrse%20openssl&f=false
+
+https://openvpn.net/community-resources/how-to/
