@@ -239,7 +239,17 @@ openssl req -new -key private/apache.key -out apache/apache.csr -subj \
 # Certificate
 openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt
 ```
+echo "
+127.0.0.1       localhost 
+127.0.1.1       coimbra
 
+10.9.0.1        apache
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+" > hosts
 
 
 
