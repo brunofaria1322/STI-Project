@@ -158,7 +158,7 @@ openssl req -new -key private/tun1-lisboa.key -out openvpn/tun1-lisboa.csr -subj
 # Certificate
 openssl ca -in openvpn/tun1-lisboa.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-lisboa.crt -passin pass:sti2022
 ```
-### OSCP Check
+### OCSP Check
 ```shell
 cd /etc/pki/    # É propositado estar fora da diretoria CA
 wget https://raw.githubusercontent.com/OpenVPN/openvpn/master/contrib/OCSP_check/OCSP_check.sh
@@ -193,7 +193,7 @@ tls-verify /etc/pki/OCSP_check.sh
 " > server.conf
 
 # check config
-sudo openvpn --config server.conf
+#sudo openvpn --config server.conf
 # start service
 sudo systemctl daemon-reload
 sudo systemctl start openvpn@server
@@ -203,6 +203,10 @@ sudo systemd-tty-ask-password-agent --query
 sudo systemctl enable openvpn@server
 sudo systemctl status openvpn@server
 ```
+***Kill all processes:***
+- `sudo systemctl stop openvpn@server`
+- `sudo systemctl disable openvpn@server`
+- `sudo killall openvpn`
 
 ### Config TUN1
 ```shell
@@ -225,7 +229,7 @@ key         /etc/pki/CA/private/tun1-coimbra.key
 verb        3
 " > client.conf
 # check config
-sudo openvpn --config client.conf
+#sudo openvpn --config client.conf
 # start service
 sudo systemctl daemon-reload
 sudo systemctl start openvpn@client
@@ -235,6 +239,10 @@ sudo systemd-tty-ask-password-agent --query
 sudo systemctl enable openvpn@client
 sudo systemctl status openvpn@client
 ```
+***Kill all processes:***
+- `sudo systemctl stop openvpn@client`
+- `sudo systemctl disable openvpn@client`
+- `sudo killall openvpn`
 
 ## Apache Server
 ### Cert Apache 
