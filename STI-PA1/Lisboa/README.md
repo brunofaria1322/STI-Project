@@ -53,13 +53,13 @@ sudo systemd-tty-ask-password-agent --query
 sudo systemctl enable openvpn@server
 sudo systemctl status openvpn@server
 
-#sudo systemctl stop openvpn@server
-#sudo systemctl disable openvpn@server
-#sudo killall openvpn
-
 echo 1 > /proc/sys/net/ipv4/ip_forward
 sudo iptables -t nat -A POSTROUTING -s 10.10.0.0/24 -o tun0 -j MASQUERADE
 ```
+***Kill all processes:***
+- `sudo systemctl stop openvpn@server`
+- `sudo systemctl disable openvpn@server`
+- `sudo killall openvpn`
 
 ## Apache Server
 ```shell

@@ -16,7 +16,7 @@ sti@client:~$ sudo mv CA /etc/pki/CA
 ## OpenVPN Tunnel
 ```shell
 #Install OpenVPN
-sudo apt-get install openvpn
+sudo apt-get install openvpn --fix-missing
 #Start Service
 sudo systemctl start openvpn
 sudo systemctl enable openvpn
