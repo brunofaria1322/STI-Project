@@ -312,43 +312,47 @@ sudo iptables -t nat -A POSTROUTING -s 10.10.0.0/24 -o tun0 -j MASQUERADE
 # install libs
 sudo apt-get install -y libqrencode4 libpam-google-authenticator
 # config
-cd /etc/openvpn/
 addgroup gauth
 useradd -g gauth gauth
+sudo google-authenticator
 mkdir google-authenticator
 chown gauth:gauth google-authenticator 
 chmod 0700 google-authenticator
 ```
+Add the line:
+- `plugin      /usr/lib/openvpn/openvpn-plugin-auth-pam.so "login login USERNAME password PASSWORD pin OTP"`
 ```sh
 # add plugin into /etc/openvpn/server.conf
+cd /etc/openvpn/
 nano server.conf
+# plugin      /usr/lib/openvpn/openvpn-plugin-auth-pam.so "login login USERNAME password PASSWORD pin OTP"
 ```
-Add the line `plugin /usr/lib/openvpn/openvpn-plugin-auth-pam.so openvpn`
+Add, at the beginning, the line:
+- `auth required pam_google_authenticator.so secret=/etc/openvpn/google-authenticator/{USER} forward_pass`
+
+(replace {USER} with the username)
 ```sh
-# reload
-sudo systemctl daemon-reload
-# find PAM library
-sudo find / -name pam_google_authenticator.so # /usr/lib/aarch64-linux-gnu/security/pam_google_authenticator.so
-# config /etc/pam.d/openvpn
-touch /etc/pam.d/openvpn
-echo "
-auth requisite /usr/lib/aarch64-linux-gnu/security/pam_google_authenticator.so
-secret=/etc/openvpn/google-authenticator/\${USER} user=gauth forward_pass
-" > /etc/pam.d/openvpn
-# generate the MFA information - replace "{USER}" with your username
+# add config into /etc/pam.d/login
+nano /etc/pam.d/login
+#auth required pam_google_authenticator.so secret=/etc/openvpn/google-authenticator/<USER> forward_pass
+```
+```sh
 su -c "google-authenticator -t -d -r3 -R30 -f -l 'OpenVPN Server' -s /etc/openvpn/google-authenticator/{USER}" - gauth
 ```
+
 Scan the QR code with GoogleAuthenticator App
+
 ```
-Your new secret key is: H7K5QQ5RWQITMFLOF6B3VMPVUY
-Enter code from app (-1 to skip): 925613 
+Your new secret key is: 6DGZQVG5E6SSWCLXKYCKXHJHPA
+Enter code from app (-1 to skip): 962663
 Code confirmed
 Your emergency scratch codes are:
-  26812225
-  54573916
-  81281925
-  12833884
-  32874720
+  38250790
+  17829309
+  86725593
+  79778279
+  47995335
+
 By default, a new token is generated every 30 seconds by the mobile app.
 In order to compensate for possible time-skew between the client and the server,
 we allow an extra token before and after the current time. This allows for a
@@ -361,7 +365,6 @@ between client and server.
 Do you want to do so? (y/n) y
 ```
 After that configure the client!
-# IGNORE ================================================
 
 
 ## Certificates Revocation
@@ -371,23 +374,3 @@ After that configure the client!
 # Creates new CRL file
 openssl ca -gencrl -keyfile private/ca.key -cert certs/ca.crt -out crl/ca.crl
 ```
-
-# Notas
-## Cert TUN0-Client
-## Cert TUN0-Coimbra
-!!!! OSCP pode 192.168.172.70
-push route 0.0.0.0
-IP forward
-## Cert TUN1-Coimbra
-## Cert TUN1-Lisboa
-push route 10.8.0.0
-!!!! Apache nao tem de ter o endereço do 192.168.172.60, tem de ser o locla
-## Cert Apache
-## Cert OCSP
-!!!!! CUIDADO COM O BIND DOS TUNEIS OS PORTES TÊM DE SER DIFERENTES
-
-!!! FAZER UM SERVICO PARA OS TUNEIS PARA ESTAR SEMPRE ATIVO
-
-https://books.google.pt/books?id=_1MoDwAAQBAJ&pg=PA130&lpg=PA130&dq=systemd+pass+passphrse+openssl&source=bl&ots=CJpi1TxFVe&sig=ACfU3U2I-44hoS_LM-IRYgzGYLWXOMx4mQ&hl=en&sa=X&ved=2ahUKEwi29Zrt9rb2AhWN-aQKHapZC14Q6AF6BAgZEAM#v=onepage&q=systemd%20pass%20passphrse%20openssl&f=false
-
-https://openvpn.net/community-resources/how-to/

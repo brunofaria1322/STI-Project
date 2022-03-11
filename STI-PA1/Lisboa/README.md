@@ -104,10 +104,11 @@ echo "
 sudo service apache2 restart
 ```
 
-### set "apache" name for IP 127.0.0.1
+### Set "apache" name for IP 127.0.0.1
 Add `127.0.0.1        apache` line to `/etc/hosts`
 
 ### Install the CA on the browser and repeat the previous test
+
 Example in Firefox:
 1. Go to `Settings`
 2. Go to `Privacy & Security`
@@ -116,6 +117,7 @@ Example in Firefox:
 5. Go to `Authorities`
 6. Click in `Import`
 7. Import `ca.crt`
+
 ***Important***
 - URL needs to be the same name as the apache key
 - In this case try the connection with `https://apache`

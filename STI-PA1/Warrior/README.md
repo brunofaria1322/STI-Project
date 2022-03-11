@@ -68,7 +68,6 @@ cd /etc/openvpn/
 nano client.conf
 ```
 Add the lines:
-- `ns-cert-type server`
 - `auth-user-pass`
 
 ### set "apache" name for IP 10.8.0.1
