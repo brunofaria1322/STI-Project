@@ -1,9 +1,4 @@
 # Lisboa Virtual Machine
-## Startup Commands
-```bash
-
-```
-
 ## Initial Configuration
 1. Set IPv4 address to `192.168.172.50` with mask `255.255.255.0`
 2. Set the hostname to `client`
@@ -21,7 +16,7 @@ sti@client:~$ sudo mv CA /etc/pki/CA
 ## OpenVPN Tunnel
 ```shell
 #Install OpenVPN
-sudo apt-get install openvpn --fix-missing
+sudo apt-get install openvpn
 #Start Service
 sudo systemctl start openvpn
 sudo systemctl enable openvpn
@@ -57,6 +52,15 @@ sudo systemd-tty-ask-password-agent --query
 sudo systemctl enable openvpn@client
 sudo systemctl status openvpn@client
 ```
+
+## Google Auth
+```shell
+cd /etc/openvpn/
+nano client.conf
+```
+Add the lines:
+- `ns-cert-type server`
+- `auth-user-pass`
 
 ### set "apache" name for IP 10.8.0.1
 Add `10.8.0.1        apache` line to `/etc/hosts`

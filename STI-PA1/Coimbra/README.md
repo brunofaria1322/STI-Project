@@ -281,6 +281,60 @@ sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o tun1 -j MASQUERADE
 sudo iptables -t nat -A POSTROUTING -s 10.10.0.0/24 -o tun0 -j MASQUERADE
 ```
 
+## Google Auth
+```shell
+# install libs
+sudo apt-get install -y libqrencode4 libpam-google-authenticator
+# config
+cd /etc/openvpn/
+addgroup gauth
+useradd -g gauth gauth
+mkdir google-authenticator
+chown gauth:gauth google-authenticator 
+chmod 0700 google-authenticator
+```
+```shell
+# add plugin into /etc/openvpn/server.conf
+nano server.conf
+```
+Add the line `plugin /usr/lib/openvpn/openvpn-plugin-auth-pam.so openvpn`
+```shell
+# reload
+sudo systemctl daemon-reload
+# find PAM library
+sudo find / -name pam_google_authenticator.so # /usr/lib/aarch64-linux-gnu/security/pam_google_authenticator.so
+# config /etc/pam.d/openvpn
+touch /etc/pam.d/openvpn
+echo "
+auth requisite /usr/lib/aarch64-linux-gnu/security/pam_google_authenticator.so
+secret=/etc/openvpn/google-authenticator/\${USER} user=gauth forward_pass
+" > /etc/pam.d/openvpn
+# generate the MFA information - replace "{USER}" with your username
+su -c "google-authenticator -t -d -r3 -R30 -f -l 'OpenVPN Server' -s /etc/openvpn/google-authenticator/{USER}" - gauth
+```
+Scan the QR code with GoogleAuthenticator App
+```
+Your new secret key is: H7K5QQ5RWQITMFLOF6B3VMPVUY
+Enter code from app (-1 to skip): 925613 
+Code confirmed
+Your emergency scratch codes are:
+  26812225
+  54573916
+  81281925
+  12833884
+  32874720
+By default, a new token is generated every 30 seconds by the mobile app.
+In order to compensate for possible time-skew between the client and the server,
+we allow an extra token before and after the current time. This allows for a
+time skew of up to 30 seconds between authentication server and client. If you
+experience problems with poor time synchronization, you can increase the window
+from its default size of 3 permitted codes (one previous code, the current
+code, the next code) to 17 permitted codes (the 8 previous codes, the current
+code, and the 8 next codes). This will permit for a time skew of up to 4 minutes
+between client and server.
+Do you want to do so? (y/n) y
+```
+After that configure the client!
 # IGNORE ================================================
 
 
