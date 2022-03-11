@@ -1,4 +1,13 @@
 # Coimbra Virtual Machine
+## Startup Commands
+```bash
+#Network
+sudo dhclient
+sudo systemctl restart NetworkManager
+
+
+```
+
 ## Initial Configuration
 1. Set IPv4 address to `192.168.172.70` with mask `255.255.255.0`
 2. Create new Network Adaptor. Set IPv4 address to `10.8.0.1` with mask `255.255.255.0`

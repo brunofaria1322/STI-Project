@@ -1,4 +1,14 @@
 # Lisboa Virtual Machine
+## Startup Commands
+```bash
+#Network
+sudo dhclient
+sudo systemctl restart NetworkManager
+
+#Apache
+sudo systemctl restart apache2
+```
+
 ## Initial Configuration
 1. Set IPv4 address to `192.168.172.60` with mask `255.255.255.0`
 2. Create new Network Adaptor. Set IPv4 address to `10.10.0.1` with mask `255.255.255.0`

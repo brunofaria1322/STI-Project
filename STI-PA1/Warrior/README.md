@@ -1,4 +1,9 @@
 # Lisboa Virtual Machine
+## Startup Commands
+```bash
+
+```
+
 ## Initial Configuration
 1. Set IPv4 address to `192.168.172.50` with mask `255.255.255.0`
 2. Set the hostname to `client`
