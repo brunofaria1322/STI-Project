@@ -1,4 +1,14 @@
 # Lisboa Virtual Machine
+## Startup Commands
+```bash
+#Network
+sudo dhclient
+sudo systemctl restart NetworkManager
+
+
+
+```
+
 ## Initial Configuration
 1. Set IPv4 address to `192.168.172.50` with mask `255.255.255.0`
 2. Set the hostname to `client`
@@ -10,7 +20,9 @@ nano /etc/hostname
 
 ```sh
 sti@coimbra $ sudo scp -r /etc/pki/CA sti@192.168.172.50:~
-sti@client:~$ sudo mv CA /etc/pki/CA
+
+sti@client:~$ sudo rm -rf /etc/pki/CA
+sti@client:~$ sudo mv ~/CA /etc/pki/CA
 ```
 
 ## OpenVPN Tunnel

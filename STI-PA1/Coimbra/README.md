@@ -5,6 +5,10 @@
 sudo dhclient
 sudo systemctl restart NetworkManager
 
+### Run OCSP Responder
+cd /etc/pki/CA/
+touch log.txt
+openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text
 
 ```
 

@@ -19,7 +19,7 @@ nano /etc/hostname
 3. Copy Keys & Certs from Coimbra
 ```sh
 sti@coimbra $ sudo scp -r /etc/pki/CA sti@192.168.172.60:~
-sti@lisboa:~$ sudo mv CA /etc/pki/CA
+sti@lisboa:~$ sudo mv ~/CA /etc/pki/CA
 ```
 ## OpenVPN Tunnel
 ```shell
@@ -62,9 +62,6 @@ sudo systemd-tty-ask-password-agent --query
 # enter passphrase (sti2022)
 sudo systemctl enable openvpn@server
 sudo systemctl status openvpn@server
-
-echo 1 > /proc/sys/net/ipv4/ip_forward
-sudo iptables -t nat -A POSTROUTING -s 10.10.0.0/24 -o tun0 -j MASQUERADE
 ```
 ***Kill all processes:***
 - `sudo systemctl stop openvpn@server`
