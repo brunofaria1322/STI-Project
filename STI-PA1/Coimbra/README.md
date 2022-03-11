@@ -10,7 +10,7 @@ sudo sysctl -w net.ipv4.ip_forward=1
 #                                   -s ip_vpnIn     -o tunOut?
 sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun0 -j MASQUERADE
 
-
+## 
 
 ### Run OCSP Responder
 su
@@ -134,7 +134,7 @@ openssl req -new -key private/tun0-client.key -out openvpn/tun0-client.csr -subj
 # Certificate
 openssl ca -in openvpn/tun0-client.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun0-client.crt -passin pass:sti2022
 # Verify certificates
-#openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/tun0-client.crt -url http://127.0.0.1:81 -resp_text
+#openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/tun0-client.crt -url http://192.168.172.70:81 -resp_text
 ```
 ### Cert TUN0-Coimbra
 ```sh
@@ -147,7 +147,7 @@ openssl req -new -key private/tun0-coimbra.key -out openvpn/tun0-coimbra.csr -su
 # Certificate
 openssl ca -in openvpn/tun0-coimbra.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun0-coimbra.crt -passin pass:sti2022
 # Verify certificates
-#openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/tun0-coimbra.crt -url http://127.0.0.1:81 -resp_text
+#openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/tun0-coimbra.crt -url http://192.168.172.70:81 -resp_text
 ```
 ### Cert TUN1-Coimbra
 ```sh
@@ -278,6 +278,8 @@ openssl req -new -key private/apache.key -out apache/apache.csr -subj \
 /C=PT/ST=Coimbra/L=Coimbra/O=UC/OU=DEI/CN=Apache/emailAddress=apache@gmail.com -passin pass:sti2022
 # Certificate
 openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/apache.crt -passin pass:sti2022
+# Verify certificates
+#openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/apache.crt -url http://192.168.172.70:81 -resp_text
 ```
 ### set "apache" name for IP 10.10.0.1
 Add `10.10.0.1        apache` line to `/etc/hosts`

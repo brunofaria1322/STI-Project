@@ -54,7 +54,7 @@ status      /var/log/openvpn/openvpn-status.log
 verb        3
 explicit-exit-notify 1
 " > server.conf
-sudo openvpn --config server.conf
+#sudo openvpn --config server.conf
 sudo systemctl daemon-reload
 sudo systemctl start openvpn@server
 # wait for passphrase prompt
