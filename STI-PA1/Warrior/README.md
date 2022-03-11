@@ -1,6 +1,11 @@
 # Lisboa Virtual Machine
 ## Startup Commands
 ```bash
+#Network
+sudo dhclient
+sudo systemctl restart NetworkManager
+
+
 
 ```
 
@@ -15,7 +20,9 @@ nano /etc/hostname
 
 ```sh
 sti@coimbra $ sudo scp -r /etc/pki/CA sti@192.168.172.50:~
-sti@client:~$ sudo mv CA /etc/pki/CA
+
+sti@client:~$ sudo rm -rf /etc/pki/CA
+sti@client:~$ sudo mv ~/CA /etc/pki/CA
 ```
 
 ## OpenVPN Tunnel
