@@ -70,6 +70,8 @@ nano client.conf
 Add the lines:
 - `auth-user-pass`
 
+## Apache with HTTPS
+
 ### set "apache" name for IP 10.8.0.1
 Add `10.8.0.1        apache` line to `/etc/hosts`
 
