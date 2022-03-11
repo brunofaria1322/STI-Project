@@ -194,6 +194,7 @@ status      /var/log/openvpn/openvpn-status.log
 verb        3
 explicit-exit-notify 1
 tls-verify /etc/pki/OCSP_check.sh
+script-security 2
 " > server.conf
 
 # check config
