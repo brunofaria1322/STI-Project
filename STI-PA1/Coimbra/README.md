@@ -80,7 +80,7 @@ openssl x509 -req -days 3650 -in ca/ca.csr -out certs/ca.crt -signkey private/ca
 ```
 ## OSCP Responder
 ### OCSP Certificate
-```shell
+```sh
 cd /etc/pki/CA/
 mkdir ocsp
 # Key
@@ -94,13 +94,13 @@ openssl ca -in ocsp/ocsp.csr -cert certs/ca.crt -keyfile private/ca.key -out cer
 #openssl x509 -in certs/ocsp.crt -text
 ```
 ### Run OCSP Responder
-```shell
+```sh
 cd /etc/pki/CA/
 touch log.txt
 openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text
 ```
 ## OpenVPN Tunnels
-```shell
+```sh
 #Install OpenVPN
 sudo apt-get install openvpn
 #Start Service
@@ -115,7 +115,7 @@ openssl dhparam -out openvpn/dh2048.pem 2048
 sudo openvpn --genkey secret private/ta.key
 ```
 ### Cert TUN0-Client
-```shell
+```sh
 cd /etc/pki/CA/
 # Key
 openssl genrsa -des3 -out private/tun0-client.key # pass: sti2022
@@ -128,7 +128,7 @@ openssl ca -in openvpn/tun0-client.csr -cert certs/ca.crt -keyfile private/ca.ke
 #openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/tun0-client.crt -url http://127.0.0.1:81 -resp_text
 ```
 ### Cert TUN0-Coimbra
-```shell
+```sh
 cd /etc/pki/CA/
 # Key
 openssl genrsa -des3 -out private/tun0-coimbra.key # pass: sti2022
@@ -141,7 +141,7 @@ openssl ca -in openvpn/tun0-coimbra.csr -cert certs/ca.crt -keyfile private/ca.k
 #openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/tun0-coimbra.crt -url http://127.0.0.1:81 -resp_text
 ```
 ### Cert TUN1-Coimbra
-```shell
+```sh
 cd /etc/pki/CA/
 # Key
 openssl genrsa -des3 -out private/tun1-coimbra.key # pass: sti2022
@@ -152,7 +152,7 @@ openssl req -new -key private/tun1-coimbra.key -out openvpn/tun1-coimbra.csr -su
 openssl ca -in openvpn/tun1-coimbra.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-coimbra.crt -passin pass:sti2022
 ```
 ### Cert TUN1-Lisboa
-```shell
+```sh
 cd /etc/pki/CA/
 # Key
 openssl genrsa -des3 -out private/tun1-lisboa.key # pass: sti2022
@@ -163,13 +163,13 @@ openssl req -new -key private/tun1-lisboa.key -out openvpn/tun1-lisboa.csr -subj
 openssl ca -in openvpn/tun1-lisboa.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-lisboa.crt -passin pass:sti2022
 ```
 ### OCSP Check
-```shell
+```sh
 cd /etc/pki/    # É propositado estar fora da diretoria CA
 wget https://raw.githubusercontent.com/OpenVPN/openvpn/master/contrib/OCSP_check/OCSP_check.sh
 sudo chmod 777 OCSP_check.sh
 ```
 ### Config TUN0
-```shell
+```sh
 cd /etc/openvpn/
 touch server.conf
 echo "
@@ -214,7 +214,7 @@ sudo systemctl status openvpn@server
 - `sudo killall openvpn`
 
 ### Config TUN1
-```shell
+```sh
 cd /etc/openvpn/
 touch client.conf
 echo "
@@ -251,7 +251,7 @@ sudo systemctl status openvpn@client
 
 ## Apache Server
 ### Cert Apache 
-```shell
+```sh
 cd /etc/pki/CA/
 mkdir apache
 # Key
@@ -287,7 +287,7 @@ sudo iptables -t nat -A POSTROUTING -s 10.10.0.0/24 -o tun0 -j MASQUERADE
 ```
 
 ## Google Auth
-```shell
+```sh
 # install libs
 sudo apt-get install -y libqrencode4 libpam-google-authenticator
 # config
@@ -298,12 +298,12 @@ mkdir google-authenticator
 chown gauth:gauth google-authenticator 
 chmod 0700 google-authenticator
 ```
-```shell
+```sh
 # add plugin into /etc/openvpn/server.conf
 nano server.conf
 ```
 Add the line `plugin /usr/lib/openvpn/openvpn-plugin-auth-pam.so openvpn`
-```shell
+```sh
 # reload
 sudo systemctl daemon-reload
 # find PAM library
@@ -344,7 +344,7 @@ After that configure the client!
 
 
 ## Certificates Revocation
-```shell
+```sh
 # Revokes name.crt certificate
 #openssl ca -revoke certs/name.crt -keyfile private/ca.key -cert certs/ca.crt
 # Creates new CRL file
