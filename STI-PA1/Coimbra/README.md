@@ -89,7 +89,7 @@ openssl x509 -req -days 3650 -in ca/ca.csr -out certs/ca.crt -signkey private/ca
 ```
 ## OSCP Responder
 ### OCSP Certificate
-```shell
+```sh
 cd /etc/pki/CA/
 mkdir ocsp
 # Key
@@ -103,13 +103,13 @@ openssl ca -in ocsp/ocsp.csr -cert certs/ca.crt -keyfile private/ca.key -out cer
 #openssl x509 -in certs/ocsp.crt -text
 ```
 ### Run OCSP Responder
-```shell
+```sh
 cd /etc/pki/CA/
 touch log.txt
 openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text
 ```
 ## OpenVPN Tunnels
-```shell
+```sh
 #Install OpenVPN
 sudo apt-get install openvpn
 #Start Service
@@ -124,7 +124,7 @@ openssl dhparam -out openvpn/dh2048.pem 2048
 sudo openvpn --genkey secret private/ta.key
 ```
 ### Cert TUN0-Client
-```shell
+```sh
 cd /etc/pki/CA/
 # Key
 openssl genrsa -des3 -out private/tun0-client.key # pass: sti2022
@@ -137,7 +137,7 @@ openssl ca -in openvpn/tun0-client.csr -cert certs/ca.crt -keyfile private/ca.ke
 #openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/tun0-client.crt -url http://127.0.0.1:81 -resp_text
 ```
 ### Cert TUN0-Coimbra
-```shell
+```sh
 cd /etc/pki/CA/
 # Key
 openssl genrsa -des3 -out private/tun0-coimbra.key # pass: sti2022
@@ -150,7 +150,7 @@ openssl ca -in openvpn/tun0-coimbra.csr -cert certs/ca.crt -keyfile private/ca.k
 #openssl ocsp -CAfile certs/ca.crt -issuer certs/ca.crt -cert certs/tun0-coimbra.crt -url http://127.0.0.1:81 -resp_text
 ```
 ### Cert TUN1-Coimbra
-```shell
+```sh
 cd /etc/pki/CA/
 # Key
 openssl genrsa -des3 -out private/tun1-coimbra.key # pass: sti2022
@@ -161,7 +161,7 @@ openssl req -new -key private/tun1-coimbra.key -out openvpn/tun1-coimbra.csr -su
 openssl ca -in openvpn/tun1-coimbra.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-coimbra.crt -passin pass:sti2022
 ```
 ### Cert TUN1-Lisboa
-```shell
+```sh
 cd /etc/pki/CA/
 # Key
 openssl genrsa -des3 -out private/tun1-lisboa.key # pass: sti2022
@@ -172,7 +172,7 @@ openssl req -new -key private/tun1-lisboa.key -out openvpn/tun1-lisboa.csr -subj
 openssl ca -in openvpn/tun1-lisboa.csr -cert certs/ca.crt -keyfile private/ca.key -out certs/tun1-lisboa.crt -passin pass:sti2022
 ```
 ### OCSP Check
-```shell
+```sh
 cd /etc/pki/    # É propositado estar fora da diretoria CA
 wget https://raw.githubusercontent.com/OpenVPN/openvpn/master/contrib/OCSP_check/OCSP_check.sh
 sudo chmod 777 OCSP_check.sh
@@ -185,7 +185,7 @@ sudo chmod 777 OCSP_check.sh
 
 ```
 ### Config TUN0
-```shell
+```sh
 cd /etc/openvpn/
 touch server.conf
 echo "
@@ -211,6 +211,7 @@ status      /var/log/openvpn/openvpn-status.log
 verb        3
 explicit-exit-notify 1
 tls-verify /etc/pki/OCSP_check.sh
+script-security 2
 " > server.conf
 
 # check config
@@ -230,7 +231,7 @@ sudo systemctl status openvpn@server
 - `sudo killall openvpn`
 
 ### Config TUN1
-```shell
+```sh
 cd /etc/openvpn/
 touch client.conf
 echo "
@@ -267,7 +268,7 @@ sudo systemctl status openvpn@client
 
 ## Apache Server
 ### Cert Apache 
-```shell
+```sh
 cd /etc/pki/CA/
 mkdir apache
 # Key
@@ -304,11 +305,65 @@ sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun1 -j MASQUERADE
 sudo iptables -t nat -A POSTROUTING -s 10.10.0.0/24 -o tun0 -j MASQUERADE
 ```
 
+## Google Auth
+```sh
+# install libs
+sudo apt-get install -y libqrencode4 libpam-google-authenticator
+# config
+cd /etc/openvpn/
+addgroup gauth
+useradd -g gauth gauth
+mkdir google-authenticator
+chown gauth:gauth google-authenticator 
+chmod 0700 google-authenticator
+```
+```sh
+# add plugin into /etc/openvpn/server.conf
+nano server.conf
+```
+Add the line `plugin /usr/lib/openvpn/openvpn-plugin-auth-pam.so openvpn`
+```sh
+# reload
+sudo systemctl daemon-reload
+# find PAM library
+sudo find / -name pam_google_authenticator.so # /usr/lib/aarch64-linux-gnu/security/pam_google_authenticator.so
+# config /etc/pam.d/openvpn
+touch /etc/pam.d/openvpn
+echo "
+auth requisite /usr/lib/aarch64-linux-gnu/security/pam_google_authenticator.so
+secret=/etc/openvpn/google-authenticator/\${USER} user=gauth forward_pass
+" > /etc/pam.d/openvpn
+# generate the MFA information - replace "{USER}" with your username
+su -c "google-authenticator -t -d -r3 -R30 -f -l 'OpenVPN Server' -s /etc/openvpn/google-authenticator/{USER}" - gauth
+```
+Scan the QR code with GoogleAuthenticator App
+```
+Your new secret key is: H7K5QQ5RWQITMFLOF6B3VMPVUY
+Enter code from app (-1 to skip): 925613 
+Code confirmed
+Your emergency scratch codes are:
+  26812225
+  54573916
+  81281925
+  12833884
+  32874720
+By default, a new token is generated every 30 seconds by the mobile app.
+In order to compensate for possible time-skew between the client and the server,
+we allow an extra token before and after the current time. This allows for a
+time skew of up to 30 seconds between authentication server and client. If you
+experience problems with poor time synchronization, you can increase the window
+from its default size of 3 permitted codes (one previous code, the current
+code, the next code) to 17 permitted codes (the 8 previous codes, the current
+code, and the 8 next codes). This will permit for a time skew of up to 4 minutes
+between client and server.
+Do you want to do so? (y/n) y
+```
+After that configure the client!
 # IGNORE ================================================
 
 
 ## Certificates Revocation
-```shell
+```sh
 # Revokes name.crt certificate
 #openssl ca -revoke certs/name.crt -keyfile private/ca.key -cert certs/ca.crt
 # Creates new CRL file

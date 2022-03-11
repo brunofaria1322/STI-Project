@@ -22,7 +22,7 @@ sti@coimbra $ sudo scp -r /etc/pki/CA sti@192.168.172.60:~
 sti@lisboa:~$ sudo mv ~/CA /etc/pki/CA
 ```
 ## OpenVPN Tunnel
-```shell
+```sh
 #Install OpenVPN
 sudo apt-get install openvpn
 #Start Service
@@ -30,7 +30,7 @@ sudo systemctl start openvpn
 sudo systemctl enable openvpn
 ```
 ### Config TUN0
-```shell
+```sh
 cd /etc/openvpn/
 touch server.conf
 echo "
@@ -69,7 +69,7 @@ sudo systemctl status openvpn@server
 - `sudo killall openvpn`
 
 ## Apache Server
-```shell
+```sh
 #Install apache
 sudo apt-get install apache2
 sudo a2enmod ssl
@@ -77,7 +77,7 @@ sudo systemctl restart apache2
 ```
 
 ### Configure Apache with Certificate
-```shell
+```sh
 cd /etc/apache2/sites-enabled
 sudo a2ensite default-ssl
 echo "
