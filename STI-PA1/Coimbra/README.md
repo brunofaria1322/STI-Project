@@ -5,7 +5,16 @@
 sudo dhclient
 sudo systemctl restart NetworkManager
 
+#enable ip forward
+sudo sysctl -w net.ipv4.ip_forward=1
+#                                   -s ip_vpnIn     -o tunOut?
+sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun0 -j MASQUERADE
+
+
+
 ### Run OCSP Responder
+su
+
 cd /etc/pki/CA/
 touch log.txt
 openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text
@@ -167,6 +176,13 @@ openssl ca -in openvpn/tun1-lisboa.csr -cert certs/ca.crt -keyfile private/ca.ke
 cd /etc/pki/    # É propositado estar fora da diretoria CA
 wget https://raw.githubusercontent.com/OpenVPN/openvpn/master/contrib/OCSP_check/OCSP_check.sh
 sudo chmod 777 OCSP_check.sh
+
+#mudar as merdas linhas
+
+#ocsp_url="http://localhost:81/"
+#issuer= "Path to ca ..."
+#verify= "Path to ca ..."
+
 ```
 ### Config TUN0
 ```shell
@@ -181,12 +197,13 @@ ca          /etc/pki/CA/certs/ca.crt
 cert        /etc/pki/CA/certs/tun0-coimbra.crt
 key         /etc/pki/CA/private/tun0-coimbra.key
 dh          /etc/pki/CA/openvpn/dh2048.pem
-server      10.8.0.0 255.255.255.0
+server      10.7.0.0 255.255.255.0
 ifconfig-pool-persist /var/log/openvpn/ipp.txt
-push \"route 10.10.0.0 255.255.255.0\"
 push \"route 10.8.0.0 255.255.255.0\"
+push \"route 10.9.0.0 255.255.255.0\"
+push \"route 10.10.0.0 255.255.255.0\"
 keepalive   10 120
-#tls-auth   /etc/pki/CA/private/ta.key 0 
+tls-auth   /etc/pki/CA/private/ta.key 0 
 cipher      AES-256-CBC
 persist-key
 persist-tun
@@ -279,9 +296,11 @@ Example in Firefox:
 
 ```sh
 #enable ip forward
-sysctl -w net.ipv4.ip_forward=1
+sudo sysctl -w net.ipv4.ip_forward=1
 #                                   -s ip_vpnIn     -o tunIn
-sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o tun1 -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun1 -j MASQUERADE
+
+#inverso
 sudo iptables -t nat -A POSTROUTING -s 10.10.0.0/24 -o tun0 -j MASQUERADE
 ```
 

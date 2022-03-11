@@ -6,7 +6,7 @@ sudo dhclient
 sudo systemctl restart NetworkManager
 
 #Apache
-sudo systemctl restart apache2
+sudo service apache2 restart
 ```
 
 ## Initial Configuration
@@ -42,12 +42,12 @@ ca          /etc/pki/CA/certs/ca.crt
 cert        /etc/pki/CA/certs/tun1-lisboa.crt
 key         /etc/pki/CA/private/tun1-lisboa.key
 dh          /etc/pki/CA/openvpn/dh2048.pem
-server      10.10.0.0 255.255.255.0
+server      10.9.0.0 255.255.255.0
 ifconfig-pool-persist /var/log/openvpn/ipp.txt
 push    \"route 10.8.0.0 255.255.255.0\"
 keepalive   10 120
-#tls-auth   /etc/pki/CA/private/ta.key 0 
-#cipher      AES-256-CBC
+tls-auth   /etc/pki/CA/private/ta.key 0 
+cipher      AES-256-CBC
 persist-key
 persist-tun
 status      /var/log/openvpn/openvpn-status.log
