@@ -4,9 +4,6 @@
 #Network
 sudo dhclient
 sudo systemctl restart NetworkManager
-
-
-
 ```
 
 ## Initial Configuration
@@ -26,7 +23,7 @@ sti@client:~$ sudo mv ~/CA /etc/pki/CA
 ```
 
 ## OpenVPN Tunnel
-```shell
+```sh
 #Install OpenVPN
 sudo apt-get install openvpn
 #Start Service
@@ -34,7 +31,7 @@ sudo systemctl start openvpn
 sudo systemctl enable openvpn
 ```
 ### Config TUN0
-```shell
+```sh
 cd /etc/openvpn/
 touch client.conf
 echo "
@@ -66,7 +63,7 @@ sudo systemctl status openvpn@client
 ```
 
 ## Google Auth
-```shell
+```sh
 cd /etc/openvpn/
 nano client.conf
 ```
