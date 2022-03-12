@@ -1,25 +1,19 @@
 # Lisboa Virtual Machine
-## Startup Commands
-```bash
-#Network
-sudo dhclient
-sudo systemctl restart NetworkManager
-
-#Apache
-sudo service apache2 restart
-```
-
 ## Initial Configuration
-1. Set IPv4 address to `192.168.172.60` with mask `255.255.255.0`
-2. Create new Network Adaptor. Set IPv4 address to `10.10.0.1` with mask `255.255.255.0`
-3. Set the hostname to `lisboa`
+1. First Network Adaptor is NAT.
+2. Create new Network Adaptor (Host-Only) and set IPv4 address to `192.168.172.60` with mask `255.255.255.0`
+3. Create new Network Adaptor (Host-Only) and set IPv4 address to `10.10.0.1` with mask `255.255.255.0`
+4. Set the hostname to `lisboa`
 ```sh
 nano /etc/hostname
 ```
 3. Copy Keys & Certs from Coimbra
 ```sh
 sti@coimbra $ sudo scp -r /etc/pki/CA sti@192.168.172.60:~
-sti@lisboa:~$ sudo mv ~/CA /etc/pki/CA
+```
+```sh
+sti@coimbra $ sudo scp -r /etc/pki/CA sti@192.168.172.60:~
+sudo mv ~/CA /etc/pki/CA
 ```
 ## OpenVPN Tunnel
 ```sh
@@ -45,9 +39,9 @@ key         /etc/pki/CA/private/tun1-lisboa.key
 dh          /etc/pki/CA/openvpn/dh2048.pem
 server      10.9.0.0 255.255.255.0
 ifconfig-pool-persist /var/log/openvpn/ipp.txt
-push    \"route 10.7.0.0 255.255.255.0\"
-push    \"route 10.8.0.0 255.255.255.0\"
-push    \"route 10.10.0.0 255.255.255.0\"
+push        \"route 10.7.0.0 255.255.255.0\"
+push        \"route 10.8.0.0 255.255.255.0\"
+push        \"route 10.10.0.0 255.255.255.0\"
 keepalive   10 120
 tls-auth   /etc/pki/CA/private/ta.key 0 
 cipher      AES-256-CBC
@@ -56,7 +50,6 @@ persist-tun
 status      /var/log/openvpn/openvpn-status.log
 verb        3
 explicit-exit-notify 1
-
 " > server.conf
 #sudo openvpn --config server.conf      #manualmente
 sudo systemctl daemon-reload
@@ -125,3 +118,19 @@ Example in Firefox:
 ***Important***
 - URL needs to be the same name as the apache key
 - In this case try the connection with `https://apache`
+
+## Startup Commands
+```bash
+#Network
+sudo dhclient
+sudo systemctl restart NetworkManager
+
+#Apache
+sudo service apache2 restart
+
+#enable ip forward
+sudo sysctl -w net.ipv4.ip_forward=1
+#                                   -s ip_vpnIn     -o tunOut?
+sudo iptables -t nat -A POSTROUTING -s 10.9.0.0/24 -o tun0 -j MASQUERADE
+#sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun1 -j MASQUERADE
+```

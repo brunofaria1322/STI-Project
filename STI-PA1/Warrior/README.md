@@ -1,14 +1,9 @@
 # Lisboa Virtual Machine
-## Startup Commands
-```bash
-#Network
-sudo dhclient
-sudo systemctl restart NetworkManager
-```
 
 ## Initial Configuration
-1. Set IPv4 address to `192.168.172.50` with mask `255.255.255.0`
-2. Set the hostname to `client`
+1. First Network Adaptor is NAT.
+2. Create new Network Adaptor (Host-Only) and set IPv4 address to `192.168.172.50` with mask `255.255.255.0`
+3. Set the hostname to `client`
 ```sh
 nano /etc/hostname
 
@@ -107,3 +102,10 @@ Example in Firefox:
 ***Important***
 - URL needs to be the same name as the apache key
 - In this case try the connection with `https://apache`
+
+## Startup Commands
+```bash
+#Network
+sudo dhclient
+sudo systemctl restart NetworkManager
+```
