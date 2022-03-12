@@ -210,8 +210,9 @@ persist-tun
 status      /var/log/openvpn/openvpn-status.log
 verb        3
 explicit-exit-notify 1
-tls-verify /etc/pki/OCSP_check.sh
+
 script-security 2
+tls-verify /etc/pki/OCSP_check.sh
 " > server.conf
 
 # check config
@@ -246,8 +247,8 @@ persist-tun
 ca          /etc/pki/CA/certs/ca.crt
 cert        /etc/pki/CA/certs/tun1-coimbra.crt
 key         /etc/pki/CA/private/tun1-coimbra.key
-#tls-auth   /etc/pki/CA/private/ta.key 1
-#cipher      AES-256-CBC
+tls-auth   /etc/pki/CA/private/ta.key 1
+cipher      AES-256-CBC
 verb        3
 " > client.conf
 # check config
@@ -300,11 +301,9 @@ Example in Firefox:
 ```sh
 #enable ip forward
 sudo sysctl -w net.ipv4.ip_forward=1
-#                                   -s ip_vpnIn     -o tunIn
-sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun1 -j MASQUERADE
+#                                   -s ip_vpnIn     -o tunOut
+sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun0 -j MASQUERADE
 
-#inverso
-sudo iptables -t nat -A POSTROUTING -s 10.10.0.0/24 -o tun0 -j MASQUERADE
 ```
 
 ## Google Auth
