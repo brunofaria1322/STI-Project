@@ -65,15 +65,34 @@ sudo systemctl status openvpn@client
 ## Google Auth
 ```sh
 cd /etc/openvpn/
-nano client.conf
+touch client.conf
+echo "
+auth-user-pass
+client
+dev         tun
+proto       udp
+remote      192.168.172.70 1195
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca          /etc/pki/CA/certs/ca.crt
+cert        /etc/pki/CA/certs/tun0-client.crt
+key         /etc/pki/CA/private/tun0-client.key
+#tls-auth   /etc/pki/CA/private/ta.key 1
+#cipher      AES-256-CBC
+verb        3
+" > client.conf
+# check config
+sudo openvpn --config client.conf
 ```
-Add the lines:
-- `auth-user-pass`
 
 ## Apache with HTTPS
-
 ### set "apache" name for IP 10.8.0.1
 Add `10.8.0.1        apache` line to `/etc/hosts`
+```sh
+nano /etc/hosts
+```
 
 ### Install the CA on the browser and repeat the previous test
 Example in Firefox:
