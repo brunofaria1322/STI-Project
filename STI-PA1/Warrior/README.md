@@ -91,6 +91,9 @@ sudo openvpn --config client.conf
 
 ### set "apache" name for IP 10.10.0.1
 Add `10.10.0.1        apache` line to `/etc/hosts`
+```sh
+nano /etc/hosts
+```
 
 ### Install the CA on the browser and repeat the previous test
 Example in Firefox:
