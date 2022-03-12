@@ -87,7 +87,7 @@ openssl ca -in ocsp/ocsp.csr -cert certs/ca.crt -keyfile private/ca.key -out cer
 ```sh
 cd /etc/pki/CA/
 touch log.txt
-openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text
+openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text -out log.txt
 ```
 ## OpenVPN Tunnels
 ```sh
@@ -193,10 +193,8 @@ cipher      AES-256-CBC
 persist-key
 persist-tun
 status      /var/log/openvpn/openvpn-status.log
-
 script-security 2
 tls-verify /etc/pki/OCSP_check.sh
-
 verb        3
 explicit-exit-notify 1
 " > server.conf

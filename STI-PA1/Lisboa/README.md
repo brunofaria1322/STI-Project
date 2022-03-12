@@ -12,8 +12,22 @@ nano /etc/hostname
 sti@coimbra $ sudo scp -r /etc/pki/CA sti@192.168.172.60:~
 ```
 ```sh
-sti@coimbra $ sudo scp -r /etc/pki/CA sti@192.168.172.60:~
 sudo mv ~/CA /etc/pki/CA
+cd /etc/pki/CA/
+find . -type f ! \( \
+    -name "dh2048.pem" \
+    -o -name "ca.crt" \
+    -o -name "apache.key" \
+    -o -name "apache.crt" \
+    -o -name "tun1-lisboa.key" \
+    -o -name "tun1-lisboa.crt" \
+    -o -name "ta.key" \
+\) -delete
+rm -rf crl
+rm -rf ca
+rm -rf ocsp 
+rm -rf newcerts
+rm -rf apache
 ```
 ## OpenVPN Tunnel
 ```sh

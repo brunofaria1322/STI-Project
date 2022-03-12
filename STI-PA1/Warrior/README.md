@@ -9,12 +9,25 @@ nano /etc/hostname
 
 ```
 3. Copy Keys & Certs from Coimbra
-
 ```sh
 sti@coimbra $ sudo scp -r /etc/pki/CA sti@192.168.172.50:~
-
-sti@client:~$ sudo rm -rf /etc/pki/CA
-sti@client:~$ sudo mv ~/CA /etc/pki/CA
+```
+```sh
+sudo scp -r /etc/pki/CA sti@192.168.172.50:~
+sudo mv ~/CA /etc/pki/CA
+cd /etc/pki/CA/
+find . -type f ! \( \
+    -name "dh2048.pem" \
+    -o -name "ca.crt" \
+    -o -name "tun0-client.key" \
+    -o -name "tun0-client.crt" \
+    -o -name "ta.key" \
+\) -delete
+rm -rf crl
+rm -rf ca
+rm -rf ocsp 
+rm -rf newcerts
+rm -rf apache
 ```
 
 ## OpenVPN Tunnel

@@ -1,0 +1,6 @@
+V	230310190412Z		01	unknown	/C=PT/ST=Coimbra/O=UC/OU=DEI/CN=OCSP/emailAddress=ocsp@gmail.com
+V	230310190541Z		02	unknown	/C=PT/ST=Coimbra/O=UC/OU=DEI/CN=TUN0-Client/emailAddress=tun0-client@gmail.com
+V	230310194405Z		03	unknown	/C=PT/ST=Coimbra/O=UC/OU=DEI/CN=TUN0-Coimbra/emailAddress=tun0-coimbra@gmail.com
+V	230310194418Z		04	unknown	/C=PT/ST=Coimbra/O=UC/OU=DEI/CN=TUN1-Coimbra/emailAddress=tun1-coimbra@gmail.com
+V	230310230002Z		05	unknown	/C=PT/ST=Coimbra/O=UC/OU=DEI/CN=TUN1-Lisboa/emailAddress=tun1-lisboa@gmail.com
+V	230310230839Z		06	unknown	/C=PT/ST=Coimbra/O=UC/OU=DEI/CN=Apache/emailAddress=apache@gmail.com
