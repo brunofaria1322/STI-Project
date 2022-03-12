@@ -9,16 +9,9 @@ sudo systemctl restart NetworkManager
 sudo sysctl -w net.ipv4.ip_forward=1
 #                                   -s ip_vpnIn     -o tunOut?
 sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun0 -j MASQUERADE
-
-## 
-
-### Run OCSP Responder
-su
-
+# Run OCSP Responder
 cd /etc/pki/CA/
-touch log.txt
 openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text
-
 ```
 
 ## Initial Configuration
@@ -33,7 +26,7 @@ nano /etc/hostname
 nano /etc/ssl/openssl.cnf
 ```
 ```nginx
-    ...
+...
     ####################################################################
     [ CA_default ]
 
@@ -63,6 +56,7 @@ nano /etc/ssl/openssl.cnf
     basicConstraints = CA:FALSE
     keyUsage = nonRepudiation, digitalSignature, keyEncipherment
     extendedKeyUsage = OCSPSigning
+...
 ```
 ```sh
 # Creates directories
@@ -176,19 +170,24 @@ openssl ca -in openvpn/tun1-lisboa.csr -cert certs/ca.crt -keyfile private/ca.ke
 cd /etc/pki/    # É propositado estar fora da diretoria CA
 wget https://raw.githubusercontent.com/OpenVPN/openvpn/master/contrib/OCSP_check/OCSP_check.sh
 sudo chmod 777 OCSP_check.sh
-
-#mudar as merdas linhas
-
-#ocsp_url="http://localhost:81/"
-#issuer= "Path to ca ..."
-#verify= "Path to ca ..."
-
+# Edit lines of OCSP_check.sh
+nano OCSP_check.sh
+```
+```sh
+...
+    ocsp_url="http://127.0.0.1:81/"
+    issuer="/etc/pki/CA/certs/ca.crt"
+    nonce="-nonce"
+    verify="/etc/pki/CA/certs/ca.crt"
+...
 ```
 ### Config TUN0
 ```sh
 cd /etc/openvpn/
 touch server.conf
 echo "
+plugin      /usr/lib/openvpn/openvpn-plugin-auth-pam.so \"login login USERNAME password PASSWORD pin OTP\"
+
 local       192.168.172.70
 port        1195 # DIFFERENT FROM TUN1
 proto       udp
@@ -199,11 +198,11 @@ key         /etc/pki/CA/private/tun0-coimbra.key
 dh          /etc/pki/CA/openvpn/dh2048.pem
 server      10.7.0.0 255.255.255.0
 ifconfig-pool-persist /var/log/openvpn/ipp.txt
-push \"route 10.8.0.0 255.255.255.0\"
-push \"route 10.9.0.0 255.255.255.0\"
-push \"route 10.10.0.0 255.255.255.0\"
+push        \"route 10.8.0.0 255.255.255.0\"
+push        \"route 10.9.0.0 255.255.255.0\"
+push        \"route 10.10.0.0 255.255.255.0\"
 keepalive   10 120
-tls-auth   /etc/pki/CA/private/ta.key 0 
+tls-auth    /etc/pki/CA/private/ta.key 0 
 cipher      AES-256-CBC
 persist-key
 persist-tun
@@ -247,7 +246,7 @@ persist-tun
 ca          /etc/pki/CA/certs/ca.crt
 cert        /etc/pki/CA/certs/tun1-coimbra.crt
 key         /etc/pki/CA/private/tun1-coimbra.key
-tls-auth   /etc/pki/CA/private/ta.key 1
+tls-auth    /etc/pki/CA/private/ta.key 1
 cipher      AES-256-CBC
 verb        3
 " > client.conf
@@ -284,6 +283,9 @@ openssl ca -in apache/apache.csr -cert certs/ca.crt -keyfile private/ca.key -out
 ```
 ### set "apache" name for IP 10.10.0.1
 Add `10.10.0.1        apache` line to `/etc/hosts`
+```sh
+nano /etc/hosts
+```
 
 ### Install the CA on the browser and repeat the previous test
 Example in Firefox:
