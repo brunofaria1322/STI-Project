@@ -9,8 +9,8 @@ sudo systemctl restart NetworkManager
 sudo sysctl -w net.ipv4.ip_forward=1
 #                                   -s ip_vpnIn     -o tunOut?
 sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun0 -j MASQUERADE
+## inverso não funcionava 
 
-## 
 
 ### Run OCSP Responder
 su
@@ -216,7 +216,7 @@ tls-verify /etc/pki/OCSP_check.sh
 " > server.conf
 
 # check config
-#sudo openvpn --config server.conf
+#sudo openvpn --config server.conf    #manualmente
 # start service
 sudo systemctl daemon-reload
 sudo systemctl start openvpn@server
@@ -252,7 +252,7 @@ cipher      AES-256-CBC
 verb        3
 " > client.conf
 # check config
-#sudo openvpn --config client.conf
+#sudo openvpn --config client.conf    #manualmente
 # start service
 sudo systemctl daemon-reload
 sudo systemctl start openvpn@client
@@ -298,13 +298,6 @@ Example in Firefox:
 - URL needs to be the same name as the apache key
 - In this case try the connection with `https://apache`
 
-```sh
-#enable ip forward
-sudo sysctl -w net.ipv4.ip_forward=1
-#                                   -s ip_vpnIn     -o tunOut
-sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun0 -j MASQUERADE
-
-```
 
 ## Google Auth
 ```sh
