@@ -1,28 +1,10 @@
 # Coimbra Virtual Machine
-## Startup Commands
-```bash
-#Network
-sudo dhclient
-sudo systemctl restart NetworkManager
-
-#enable ip forward
-sudo sysctl -w net.ipv4.ip_forward=1
-#                                   -s ip_vpnIn     -o tunOut?
-sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun0 -j MASQUERADE
-## inverso não funcionava 
-
-
-### Run OCSP Responder
-su
-
-cd /etc/pki/CA/
-openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text
-```
 
 ## Initial Configuration
-1. Set IPv4 address to `192.168.172.70` with mask `255.255.255.0`
-2. Create new Network Adaptor. Set IPv4 address to `10.8.0.1` with mask `255.255.255.0`
-3. Set the hostname to `coimbra`
+1. First Network Adaptor is NAT.
+2. Create new Network Adaptor (Host-Only) and set IPv4 address to `192.168.172.70` with mask `255.255.255.0`
+3. Create new Network Adaptor (Host-Only) and set IPv4 address to `10.8.0.1` with mask `255.255.255.0`
+4. Set the hostname to `coimbra`
 ```sh
 nano /etc/hostname
 ```
@@ -192,7 +174,6 @@ cd /etc/openvpn/
 touch server.conf
 echo "
 plugin      /usr/lib/openvpn/openvpn-plugin-auth-pam.so \"login login USERNAME password PASSWORD pin OTP\"
-
 local       192.168.172.70
 port        1195 # DIFFERENT FROM TUN1
 proto       udp
@@ -212,11 +193,10 @@ cipher      AES-256-CBC
 persist-key
 persist-tun
 status      /var/log/openvpn/openvpn-status.log
-verb        3
-explicit-exit-notify 1
-
 script-security 2
 tls-verify /etc/pki/OCSP_check.sh
+verb        3
+explicit-exit-notify 1
 " > server.conf
 
 # check config
@@ -372,4 +352,21 @@ After that configure the client!
 #openssl ca -revoke certs/name.crt -keyfile private/ca.key -cert certs/ca.crt
 # Creates new CRL file
 openssl ca -gencrl -keyfile private/ca.key -cert certs/ca.crt -out crl/ca.crl
+```
+
+## Startup Commands
+```bash
+#Network
+sudo dhclient
+sudo systemctl restart NetworkManager
+
+#enable ip forward (tun0 == to lisboa)
+sudo sysctl -w net.ipv4.ip_forward=1
+#                                   -s ip_vpnIn     -o tunOut?
+sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun0 -j MASQUERADE
+#sudo iptables -t nat -A POSTROUTING -s 10.7.0.0/24 -o tun1 -j MASQUERADE
+
+# Run OCSP Responder
+cd /etc/pki/CA/
+openssl ocsp -index index.txt -port 81 -rsigner certs/ocsp.crt -rkey private/ocsp.key -CA certs/ca.crt -text
 ```
