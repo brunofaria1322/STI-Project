@@ -79,8 +79,8 @@ persist-tun
 ca          /etc/pki/CA/certs/ca.crt
 cert        /etc/pki/CA/certs/tun0-client.crt
 key         /etc/pki/CA/private/tun0-client.key
-#tls-auth   /etc/pki/CA/private/ta.key 1
-#cipher      AES-256-CBC
+tls-auth   /etc/pki/CA/private/ta.key 1
+cipher      AES-256-CBC
 verb        3
 " > client.conf
 # check config
@@ -91,6 +91,9 @@ sudo openvpn --config client.conf
 
 ### set "apache" name for IP 10.10.0.1
 Add `10.10.0.1        apache` line to `/etc/hosts`
+```sh
+nano /etc/hosts
+```
 
 ### Install the CA on the browser and repeat the previous test
 Example in Firefox:
