@@ -79,8 +79,8 @@ persist-tun
 ca          /etc/pki/CA/certs/ca.crt
 cert        /etc/pki/CA/certs/tun0-client.crt
 key         /etc/pki/CA/private/tun0-client.key
-#tls-auth   /etc/pki/CA/private/ta.key 1
-#cipher      AES-256-CBC
+tls-auth   /etc/pki/CA/private/ta.key 1
+cipher      AES-256-CBC
 verb        3
 " > client.conf
 # check config
