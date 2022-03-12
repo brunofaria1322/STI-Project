@@ -212,11 +212,13 @@ cipher      AES-256-CBC
 persist-key
 persist-tun
 status      /var/log/openvpn/openvpn-status.log
-verb        3
-explicit-exit-notify 1
 
 script-security 2
 tls-verify /etc/pki/OCSP_check.sh
+
+verb        3
+explicit-exit-notify 1
+
 " > server.conf
 
 # check config
