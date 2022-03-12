@@ -43,7 +43,7 @@ push        \"route 10.7.0.0 255.255.255.0\"
 push        \"route 10.8.0.0 255.255.255.0\"
 push        \"route 10.10.0.0 255.255.255.0\"
 keepalive   10 120
-tls-auth   /etc/pki/CA/private/ta.key 0 
+tls-auth    /etc/pki/CA/private/ta.key 0 
 cipher      AES-256-CBC
 persist-key
 persist-tun
