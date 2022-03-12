@@ -29,6 +29,7 @@ sudo apt-get install openvpn
 sudo systemctl start openvpn
 sudo systemctl enable openvpn
 ```
+
 ### Config TUN0
 ```sh
 cd /etc/openvpn/
