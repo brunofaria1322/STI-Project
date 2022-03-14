@@ -173,7 +173,6 @@ nano OCSP_check.sh
 cd /etc/openvpn/
 touch server.conf
 echo "
-plugin      /usr/lib/openvpn/openvpn-plugin-auth-pam.so \"login login USERNAME password PASSWORD pin OTP\"
 local       192.168.172.70
 port        1195 # DIFFERENT FROM TUN1
 proto       udp
@@ -297,6 +296,35 @@ sudo google-authenticator
 mkdir google-authenticator
 chown gauth:gauth google-authenticator 
 chmod 0700 google-authenticator
+#add plugin into /etc/openvpn/server.conf
+cd /etc/openvpn/
+touch server.conf
+echo "
+plugin      /usr/lib/openvpn/openvpn-plugin-auth-pam.so \"login login USERNAME password PASSWORD pin OTP\"
+local       192.168.172.70
+port        1195 # DIFFERENT FROM TUN1
+proto       udp
+dev         tun
+ca          /etc/pki/CA/certs/ca.crt
+cert        /etc/pki/CA/certs/tun0-coimbra.crt
+key         /etc/pki/CA/private/tun0-coimbra.key
+dh          /etc/pki/CA/openvpn/dh2048.pem
+server      10.7.0.0 255.255.255.0
+ifconfig-pool-persist /var/log/openvpn/ipp.txt
+push        \"route 10.8.0.0 255.255.255.0\"
+push        \"route 10.9.0.0 255.255.255.0\"
+push        \"route 10.10.0.0 255.255.255.0\"
+keepalive   10 120
+tls-auth    /etc/pki/CA/private/ta.key 0 
+cipher      AES-256-CBC
+persist-key
+persist-tun
+status      /var/log/openvpn/openvpn-status.log
+script-security 2
+tls-verify /etc/pki/OCSP_check.sh
+verb        3
+explicit-exit-notify 1
+" > server.conf
 ```
 Add the line:
 - `plugin      /usr/lib/openvpn/openvpn-plugin-auth-pam.so "login login USERNAME password PASSWORD pin OTP"`
