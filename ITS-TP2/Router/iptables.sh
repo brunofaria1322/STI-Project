@@ -36,6 +36,11 @@ sudo iptables -t mangle -F
 sudo iptables -F
 sudo iptables -X
 
+# DROP policy for all chains
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT DROP
+
 ## ssh from my pc
 sudo iptables -A OUTPUT -s $ROUTER_VM -p tcp --sport ssh -j ACCEPT
 
@@ -53,10 +58,10 @@ sudo iptables -A INPUT -s $DNS -p tcp --dport ssh -j ACCEPT
 
 ## Firewall configuration to authorize direct communications (without NAT)
 # DNS
-sudo iptables -A FORWARD -d $DNS -p udp --dport domain -j ACCEPT
 sudo iptables -A FORWARD -d $DNS -p tcp --dport domain -j ACCEPT
-sudo iptables -A FORWARD -s $DNS -p udp --dport domain -j ACCEPT
 sudo iptables -A FORWARD -s $DNS -p tcp --dport domain -j ACCEPT
+sudo iptables -A FORWARD -d $DNS -p udp --dport domain -j ACCEPT
+sudo iptables -A FORWARD -s $DNS -p udp --dport domain -j ACCEPT
 # POP and IMAP connections to the mail server
 sudo iptables -A FORWARD -d $MAIL -p tcp --dport pop3 -j ACCEPT
 sudo iptables -A FORWARD -d $MAIL -p tcp --dport imap -j ACCEPT
@@ -66,13 +71,13 @@ sudo iptables -A FORWARD -d $SMTP -p tcp --dport smtp -j ACCEPT
 sudo iptables -A FORWARD -d $WWW -p tcp --dport http -j ACCEPT
 sudo iptables -A FORWARD -d $WWW -p tcp --dport https -j ACCEPT
 # OpenVPN connections to the vpn-gw server.
-sudo iptables -A FORWARD -d $WWW -p tcp --dport openvpn -j ACCEPT
-sudo iptables -A FORWARD -d $WWW -p udp --dport openvpn -j ACCEPT
+sudo iptables -A FORWARD -d $VPN -p tcp --dport openvpn -j ACCEPT
+sudo iptables -A FORWARD -d $VPN -p udp --dport openvpn -j ACCEPT
 # VPN clients connected to the gateway (vpn-gw) should able to connect to the PosgreSQL service on the datastore server.
-sudo iptables -A FORWARD -d $DATASTORE -s $WWW -p tcp --dport postgres -j ACCEPT
+sudo iptables -A FORWARD -d $DATASTORE -s $VPN -p tcp --dport postgres -j ACCEPT
 # VPN clients connected to vpn-gw server should be able to connect to Kerberos v5 service on the kerberos server. A maximum of 10 simultaneous connections are allowed
-sudo iptables -A FORWARD -d $KERBEROS -s $WWW -p tcp --dport kerberos -j NFQUEUE --queue-num 10
-sudo iptables -A FORWARD -d $KERBEROS -s $WWW -p udp --dport kerberos -j NFQUEUE --queue-num 10
+sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p tcp --dport kerberos -j NFQUEUE --queue-num 10
+sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p udp --dport kerberos -j NFQUEUE --queue-num 10
 
 
 # Firewall configuration for connections to the external IP address of the firewall (using NAT)
@@ -113,11 +118,6 @@ sudo iptables -A FORWARD -s $INTERNAL_NETWORK/24 -p tcp --dport ftp-data -j ACCE
 sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 sudo iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 sudo iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
-
-# DROP all chains
-sudo iptables -P INPUT DROP
-sudo iptables -P FORWARD DROP
-sudo iptables -P OUTPUT DROP
 
 #Print all rules
 sudo iptables -L

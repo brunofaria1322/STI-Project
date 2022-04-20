@@ -7,7 +7,6 @@
 ## Installation
 ```sh
 sudo apt-get install net-tools
-sudo apt-get install ufw
 ```
 ## Network Configuration
 ```sh
@@ -19,23 +18,34 @@ iface lo inet loopback
 
 auto ens160
 iface ens160 inet dhcp
-    address 192.168.93.162
+    address 192.168.93.164
     netmask 255.255.255.0
 
 auto ens256
 iface ens256 inet static
-    address 10.10.10.4
+    address 10.10.10.10
     netmask 255.255.255.0
 """ > /etc/network/interfaces
 sudo systemctl restart networking
 ```
-## IPTables Configuration
+## NetCat Listening
 ```sh
-sudo nc -l -u -p domain
+# dns
+nc -l -p domain -v
+nc -l -u -p domain -v
+# mail
+nc -l -p pop3 -v
+nc -l -p imap -v
+# smtp
+nc -l -p smtp -v
+# www
+nc -l -p http -v
+nc -l -p https -v
+# vpn-gw
+nc -l -p openvpn -v
+nc -l -u -p openvpn -v
 ```
-## Netcat Testing
-```sh
-nc -vz 10.10.10.4 domain
-nc -l -p domain
-```
+
+
+
 

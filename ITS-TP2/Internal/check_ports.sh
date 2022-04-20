@@ -1,3 +1,4 @@
+# 22 (ssh)
 # 53 (domain)
 # 110 (pop3)
 # 143 (imap2)
@@ -6,9 +7,9 @@
 # 443 (https)
 # 1194 (openvpn)
 
-DMZ_NETWORK="10.10.10.4";
-PORTS="53 110 143 25 80 443 1194";
+DMZ_NETWORK="10.10.10.10";
+PORTS="22 53 110 143 25 80 443 1194";
 for port in $PORTS; do 
-    nc -n -ztv $DMZ_NETWORK $port; #tcp
-    nc -n -zuv $DMZ_NETWORK $port; #udp
+    nc -n -w 1 -vz $DMZ_NETWORK $port; #tcp
+    #nc -n -w 1 -uvz $DMZ_NETWORK $port; #udp
 done;
