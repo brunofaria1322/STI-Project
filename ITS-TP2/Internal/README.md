@@ -28,7 +28,7 @@ iface ens256 inet static
 """ > /etc/network/interfaces
 sudo systemctl restart networking
 ```
-## IPTables Configuration
+## NetCat Testing
 ```sh
 # dns
 nc 10.10.10.10 domain -v
