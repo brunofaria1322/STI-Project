@@ -46,6 +46,6 @@ sudo systemctl restart networking
 ```
 ## IPTables Configuration
 ```sh
-./iptables.sh
+sudo ./iptables.sh
 ```
 
