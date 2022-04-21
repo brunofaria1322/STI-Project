@@ -28,3 +28,4 @@ iface ens256 inet static
     netmask 255.255.255.0
 """ > /etc/network/interfaces
 sudo systemctl restart networking
+echo 1 > /proc/sys/net/ipv4/ip_forward
