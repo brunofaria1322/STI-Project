@@ -62,11 +62,11 @@ sudo iptables -A FORWARD -d $DNS -p tcp --dport domain -j ACCEPT
 sudo iptables -A FORWARD -s $DNS -p tcp --dport domain -j ACCEPT
 sudo iptables -A FORWARD -d $DNS -p udp --dport domain -j ACCEPT
 sudo iptables -A FORWARD -s $DNS -p udp --dport domain -j ACCEPT
+# SMTP connections to the smtp server
+sudo iptables -A FORWARD -d $SMTP -p tcp --dport smtp -j ACCEPT
 # POP and IMAP connections to the mail server
 sudo iptables -A FORWARD -d $MAIL -p tcp --dport pop3 -j ACCEPT
 sudo iptables -A FORWARD -d $MAIL -p tcp --dport imap -j ACCEPT
-# SMTP connections to the smtp server
-sudo iptables -A FORWARD -d $SMTP -p tcp --dport smtp -j ACCEPT
 # HTTP and HTTPS connections to the www server
 sudo iptables -A FORWARD -d $WWW -p tcp --dport http -j ACCEPT
 sudo iptables -A FORWARD -d $WWW -p tcp --dport https -j ACCEPT
@@ -80,7 +80,7 @@ sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p tcp --dport kerberos -j ACCEPT
 sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p udp --dport kerberos -j ACCEPT
 
 
-# Firewall configuration for connections to the external IP address of the firewall (using NAT)
+## Firewall configuration for connections to the external IP address of the firewall (using NAT)
 #Allow FTP
 sudo iptables -t nat -A PREROUTING -d $ROUTER_VM -p tcp --dport ftp -j DNAT --to-destination $FTP
 sudo iptables -t nat -A PREROUTING -d $ROUTER_VM -p tcp --dport ftp-data -j DNAT --to-destination $FTP
@@ -93,7 +93,7 @@ sudo iptables -A FORWARD -d $DATASTORE -s $DNS2 -p tcp --dport ssh -j ACCEPT
 sudo iptables -A FORWARD -d $DATASTORE -s $EDEN -p tcp --dport ssh -j ACCEPT
 
 
-#Allow forwarding of packets from internal networks to internet (SNAT)
+## Firewall configuration for communications from the internal network to the outside (using NAT)
 #Allow DNS
 sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NETWORK/24 -p tcp --dport domain -j SNAT --to-source $ROUTER_VM
 sudo iptables -A FORWARD -s $INTERNAL_NETWORK/24 -p tcp --dport domain -j ACCEPT
