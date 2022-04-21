@@ -52,8 +52,8 @@ sudo iptables -A INPUT -p udp --dport domain -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --dport domain -j ACCEPT
 sudo iptables -A OUTPUT -p udp --dport domain -j ACCEPT
 # SSH  connections  to  the  router system if  originated  at  the  internal  network  or  at  the  VPN gateway 
-sudo iptables -A INPUT -s $INTERNAL_NETWORK/24 -p tcp --dport ssh -j ACCEPT
-sudo iptables -A INPUT -s $DNS -p tcp --dport ssh -j ACCEPT
+sudo iptables -A INPUT -s $INTERNAL_NETWORK/24 -d $ROUTER_IN -p tcp --dport ssh -j ACCEPT
+sudo iptables -A INPUT -s $DNS -d $ROUTER_DMZ -p tcp --dport ssh -j ACCEPT
 
 
 ## Firewall configuration to authorize direct communications (without NAT)
@@ -76,8 +76,8 @@ sudo iptables -A FORWARD -d $VPN -p udp --dport openvpn -j ACCEPT
 # VPN clients connected to the gateway (vpn-gw) should able to connect to the PosgreSQL service on the datastore server.
 sudo iptables -A FORWARD -d $DATASTORE -s $VPN -p tcp --dport postgres -j ACCEPT
 # VPN clients connected to vpn-gw server should be able to connect to Kerberos v5 service on the kerberos server. A maximum of 10 simultaneous connections are allowed
-sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p tcp --dport kerberos -j NFQUEUE --queue-num 10
-sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p udp --dport kerberos -j NFQUEUE --queue-num 10
+sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p tcp --dport kerberos -j ACCEPT
+sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p udp --dport kerberos -j ACCEPT
 
 
 # Firewall configuration for connections to the external IP address of the firewall (using NAT)
@@ -120,4 +120,4 @@ sudo iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 sudo iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 #Print all rules
-sudo iptables -L
+sudo iptables -nvL
