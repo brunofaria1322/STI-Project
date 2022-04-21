@@ -76,7 +76,7 @@ sudo iptables -t filter -A FORWARD -d $VPN -p udp --dport openvpn -j ACCEPT
 # VPN clients connected to the gateway (vpn-gw) should able to connect to the PosgreSQL service on the datastore server.
 sudo iptables -t filter -A FORWARD -d $DATASTORE -s $VPN -p tcp --dport postgres -j ACCEPT
 # VPN clients connected to vpn-gw server should be able to connect to Kerberos v5 service on the kerberos server. A maximum of 10 simultaneous connections are allowed
-sudo iptables -t filter -A FORWARD -d $KERBEROS -s $VPN -p tcp --dport kerberos -m connlimit --connlimit-above 10 -j REJECT --reject-with tcp-reset
+sudo iptables -t filter -A FORWARD -d $KERBEROS -s $VPN -p tcp --dport kerberos -m connlimit --connlimit-above 10 -j REJECT
 sudo iptables -t filter -A FORWARD -d $KERBEROS -s $VPN -p udp --dport kerberos -m connlimit --connlimit-above 10 -j REJECT
 
 
