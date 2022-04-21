@@ -1,5 +1,7 @@
+ip address flush dev ens160
 ip address flush dev ens161
 ip address flush dev ens256
+ip route flush dev ens160
 ip route flush dev ens161
 ip route flush dev ens256
 echo """

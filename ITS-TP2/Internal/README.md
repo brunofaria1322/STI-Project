@@ -12,7 +12,6 @@ sudo apt-get install net-tools
 ```sh
 bash ./in_network.sh
 ```
-```
 ## NetCat Testing
 ```sh
 # dns

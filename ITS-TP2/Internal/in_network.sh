@@ -1,4 +1,6 @@
+ip address flush dev ens160
 ip address flush dev ens256
+ip route flush dev ens160
 ip route flush dev ens256
 echo """
 source /etc/network/interfaces.d/*
@@ -16,10 +18,12 @@ iface ens256 inet static
     address 10.20.20.10
     network 10.20.20.0
     netmask 255.255.255.0
-    gateway 10.20.20.3
+    gateway 10.20.20.1
     broadcast 10.20.20.255
 
-up ip route add 10.10.10.0/24 via 10.20.20.3 dev ens256
-up ip route add 192.168.93.0/24 via 10.20.20.3 dev ens256
+up ip route add 10.10.10.0/24 via 10.20.20.1 dev ens256
+#down ip route del 10.10.10.0/24 via 10.20.20.1 dev ens256
+up ip route add 192.168.93.0/24 via 10.20.20.1 dev ens256
+#down ip route del 192.168.93.0/24 via 10.20.20.1 dev ens256
 """ > /etc/network/interfaces
 sudo systemctl restart networking
