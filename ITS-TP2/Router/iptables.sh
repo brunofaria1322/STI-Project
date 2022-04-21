@@ -51,7 +51,7 @@ sudo iptables -A INPUT -p tcp --dport domain -j ACCEPT
 sudo iptables -A INPUT -p udp --dport domain -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --dport domain -j ACCEPT
 sudo iptables -A OUTPUT -p udp --dport domain -j ACCEPT
-# SSH  connections  to  the  router system if  originated  at  the  internal  network  or  at  the  VPN gateway 
+# SSH  connections  to  the  router system if  originated  at  the  internal  network  or  at  the  VPN gateway
 sudo iptables -A INPUT -s $INTERNAL_NETWORK/24 -d $ROUTER_IN -p tcp --dport ssh -j ACCEPT
 sudo iptables -A INPUT -s $DNS -d $ROUTER_DMZ -p tcp --dport ssh -j ACCEPT
 
@@ -68,16 +68,16 @@ sudo iptables -A FORWARD -d $SMTP -p tcp --dport smtp -j ACCEPT
 sudo iptables -A FORWARD -d $MAIL -p tcp --dport pop3 -j ACCEPT
 sudo iptables -A FORWARD -d $MAIL -p tcp --dport imap -j ACCEPT
 # HTTP and HTTPS connections to the www server
-sudo iptables -A FORWARD -d $WWW -p tcp --dport http -j ACCEPT
-sudo iptables -A FORWARD -d $WWW -p tcp --dport https -j ACCEPT
+sudo iptables -t filter -A FORWARD -d $WWW -p tcp --dport http -j ACCEPT
+sudo iptables -t filter -A FORWARD -d $WWW -p tcp --dport https -j ACCEPT
 # OpenVPN connections to the vpn-gw server.
-sudo iptables -A FORWARD -d $VPN -p tcp --dport openvpn -j ACCEPT
-sudo iptables -A FORWARD -d $VPN -p udp --dport openvpn -j ACCEPT
+sudo iptables -t filter -A FORWARD -d $VPN -p tcp --dport openvpn -j ACCEPT
+sudo iptables -t filter -A FORWARD -d $VPN -p udp --dport openvpn -j ACCEPT
 # VPN clients connected to the gateway (vpn-gw) should able to connect to the PosgreSQL service on the datastore server.
-sudo iptables -A FORWARD -d $DATASTORE -s $VPN -p tcp --dport postgres -j ACCEPT
+sudo iptables -t filter -A FORWARD -d $DATASTORE -s $VPN -p tcp --dport postgres -j ACCEPT
 # VPN clients connected to vpn-gw server should be able to connect to Kerberos v5 service on the kerberos server. A maximum of 10 simultaneous connections are allowed
-sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p tcp --dport kerberos -j ACCEPT
-sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p udp --dport kerberos -j ACCEPT
+sudo iptables -t filter -A FORWARD -d $KERBEROS -s $VPN -p tcp --dport kerberos -j ACCEPT
+sudo iptables -t filter -A FORWARD -d $KERBEROS -s $VPN -p udp --dport kerberos -j ACCEPT
 
 
 ## Firewall configuration for connections to the external IP address of the firewall (using NAT)
