@@ -1,15 +1,9 @@
-# 22 (ssh)
-# 53 (domain)
-# 110 (pop3)
-# 143 (imap2)
-# 25 (smtp)
-# 80 (http)
-# 443 (https)
-# 1194 (openvpn)
+# 88 (kerberos)
+# 5432 (postgres)
 
-NETWORK="10.10.10.10";
-TCP_PORTS="22 53 110 143 25 80 443 1194";
-UDP_PORTS="22 1194";
+NETWORK="10.20.20.10";
+TCP_PORTS="88 5432";
+UDP_PORTS="88 5432";
 for port in $TCP_PORTS; do 
     nc -n -w 1 -z $NETWORK $port; #tcp
     if [ $? -eq 0 ]; then
