@@ -14,3 +14,5 @@ done;
 for port in $UDP_PORTS; do 
     nc -l -vu -p $port & 
 done;
+
+# nc -l -v -p 80
