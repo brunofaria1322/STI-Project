@@ -19,7 +19,7 @@ EDEN=$INTERNET_IP;
 
 #Configure a Linux system to operate as a router (by enabling packet forwarding) between two IPv4 networks
 echo 1 > /proc/sys/net/ipv4/ip_forward
-modprobe ip_conntrack_ftp
+sudo modprobe ip_conntrack_ftp
 
 # Clear firewall
 sudo iptables -t nat -F
@@ -60,14 +60,14 @@ sudo iptables -A FORWARD -d $MAIL -p tcp --dport pop3 -j ACCEPT
 sudo iptables -A FORWARD -d $MAIL -p tcp --dport imap -j ACCEPT
 # HTTP and HTTPS connections to the www server
 # Queue Para XSS
-sudo iptables -A FORWARD -d $WWW -p tcp --dport http -j ACCEPT NFQUEUE --queue-num 0
-sudo iptables -A FORWARD -d $WWW -p tcp --dport https -j ACCEPT NFQUEUE --queue-num 0
+sudo iptables -A FORWARD -d $WWW -p tcp --dport http -j NFQUEUE --queue-num 0
+sudo iptables -A FORWARD -d $WWW -p tcp --dport https -j NFQUEUE --queue-num 0
 # OpenVPN connections to the vpn-gw server.
 sudo iptables -A FORWARD -d $VPN -p tcp --dport openvpn -j ACCEPT
 sudo iptables -A FORWARD -d $VPN -p udp --dport openvpn -j ACCEPT
 # VPN clients connected to the gateway (vpn-gw) should able to connect to the PosgreSQL service on the datastore server.
 # Queue Para SQL
-sudo iptables -A FORWARD -d $DATASTORE -s $VPN -p tcp --dport postgres -j ACCEPT NFQUEUE --queue-num 0
+sudo iptables -A FORWARD -d $DATASTORE -s $VPN -p tcp --dport postgres -j NFQUEUE --queue-num 0
 # VPN clients connected to vpn-gw server should be able to connect to Kerberos v5 service on the kerberos server. A maximum of 10 simultaneous connections are allowed
 sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p tcp --dport kerberos -m connlimit --connlimit-upto 10 -j ACCEPT
 sudo iptables -A FORWARD -d $KERBEROS -s $VPN -p udp --dport kerberos -m connlimit --connlimit-upto 10 -j ACCEPT
