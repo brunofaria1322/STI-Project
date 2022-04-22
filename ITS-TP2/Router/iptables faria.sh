@@ -60,7 +60,8 @@ sudo iptables -A FORWARD -d $MAIL -p tcp --dport pop3 -j ACCEPT
 sudo iptables -A FORWARD -d $MAIL -p tcp --dport imap -j ACCEPT
 # HTTP and HTTPS connections to the www server
 # Queue Para XSS
-.+9
+sudo iptables -A FORWARD -d $WWW -p tcp --dport http -j NFQUEUE --queue-num 0
+sudo iptables -A FORWARD -d $WWW -p tcp --dport https -j NFQUEUE --queue-num 0
 # OpenVPN connections to the vpn-gw server.
 sudo iptables -A FORWARD -d $VPN -p tcp --dport openvpn -j ACCEPT
 sudo iptables -A FORWARD -d $VPN -p udp --dport openvpn -j ACCEPT
