@@ -358,3 +358,45 @@ Verify instalation
 ```bash
 sudo snort -v
 ```
+
+
+Project
+```bash
+
+# Configure rules file 
+echo """
+ipvar VAR [10.10.10.0/24,10.10.20.0/24]
+
+#[action] [protocol] [sourceIP] [sourceport] -> [destIP] [destport] ( [Rule options] )
+
+#SQL
+drop tcp any any -> \$VAR any (msg:\" SQL Injection Based on or TRUE \"; sid:1000000; rev:1;\
+    content:\"or\"; nocase;)
+
+drop tcp any any -> \$VAR any (msg:\" SQL Injection Based on DROP \"; sid:1000001; rev:1;\
+    content:\"drop\"; nocase;)
+
+
+#XSS
+drop tcp any any -> \$VAR any (msg:\" XSS Attack <...> \"; sid:1000002; rev:1;\
+    content:\"<script>\"; nocase;)
+
+drop tcp any any -> \$VAR any (msg:\" XSS Attack <img ...> \"; sid:1000003; rev:1;\
+   content:\"<img\"; nocase;)
+""" > /etc/snort/rules/local.rules
+
+
+# Configure conf file 
+echo """
+include rules/local.rules
+config policy_mode: inline
+config daq:nfq
+config daq_dir: /usr/local/lib/daq
+config daq_mode: inline
+""" > /etc/snort/conf2.conf
+
+mkdir /var/log/snort
+
+snort -Q --daq nfq --daq-var queue=0 -c /etc/snort/conf.conf -A console
+
+```
