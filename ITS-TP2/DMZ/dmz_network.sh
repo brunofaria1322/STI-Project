@@ -10,7 +10,7 @@ iface lo inet loopback
 
 auto ens160
 iface ens160 inet dhcp
-    address 192.168.93.162
+    address 192.168.93.164
     netmask 255.255.255.0
 
 auto ens256
