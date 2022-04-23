@@ -370,19 +370,12 @@ ipvar VAR [10.10.10.0/24,10.10.20.0/24]
 #[action] [protocol] [sourceIP] [sourceport] -> [destIP] [destport] ( [Rule options] )
 
 #SQL
-drop tcp any any -> \$VAR any (msg:\" SQL Injection Based on or TRUE \"; sid:1000000; rev:1;\\
-    content:\"or\"; nocase; flow:to_server,established;)
-
-drop tcp any any -> \$VAR any (msg:\" SQL Injection Based on DROP \"; sid:1000001; rev:1;\\
-    content:\"drop\"; nocase; flow:to_server,established;)
-
+drop tcp any any -> \$VAR any (msg:\" SQL Injection Based on or TRUE \"; sid:1000000; rev:1; content:\"or \"; nocase;flow:to_server,established;)
+drop tcp any any -> \$VAR any (msg:\" SQL Injection Based on DROP \"; sid:1000001; rev:1; content\"dr\"; nocase;flow:to_server,established;)
 
 #XSS
-drop tcp any any -> \$VAR any (msg:\" XSS Attack <...> \"; sid:1000002; rev:1;\\
-    content:\"<script>\"; nocase; flow:to_server,established;)
-
-drop tcp any any -> \$VAR any (msg:\" XSS Attack <img ...> \"; sid:1000003; rev:1;\\
-   content:\"<img\"; nocase; flow:to_server,established;)
+drop tcp any any -> \$VAR any (msg:\" XSS Attack <...> \"; sid:1000002; rev:1; conten\"<script> \"; nocase;flow:to_server,established;)
+drop tcp any any -> \$VAR any (msg:\" XSS Attack <img ...> \"; sid:1000003; rev:1; conten\"<img \"; nocase; flow:to_server,established;)
 """ > /etc/snort/rules/local.rules
 
 
@@ -397,6 +390,7 @@ config daq_mode: inline
 
 mkdir /var/log/snort
 
-snort -Q --daq nfq --daq-var queue=0 -c /etc/snort/conf.conf -A console
+#snort -Q --daq nfq --daq-var queue=0 -c /etc/snort/conf.conf -A console
+snort -Q --daq nfq --daq-var queue=0 -c /etc/snort/conf.conf -vd -K ascii -l logs
 
 ```
