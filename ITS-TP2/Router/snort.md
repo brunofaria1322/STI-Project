@@ -386,11 +386,12 @@ config policy_mode: inline
 config daq:nfq
 config daq_dir: /usr/local/lib/daq
 config daq_mode: inline
+config daq_var: queue=0
 """ > /etc/snort/conf.conf
 
 mkdir /var/log/snort
 
-#snort -Q --daq nfq --daq-var queue=0 -c /etc/snort/conf.conf -A console
-snort -Q --daq nfq --daq-var queue=0 -c /etc/snort/conf.conf -vd -K ascii -l logs
+snort -Q --daq nfq --daq-var queue=0 -c /etc/snort/conf.conf -A console -dev
+#snort -Q --daq nfq --daq-var queue=0 -c /etc/snort/conf.conf -vd -K ascii -l logs
 
 ```
