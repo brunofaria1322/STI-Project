@@ -2,6 +2,7 @@ ip address flush dev ens33
 ip route flush dev ens33
 ip address flush dev ens34
 ip route flush dev ens34
+
 echo """
 source /etc/network/interfaces.d/*
 
@@ -26,4 +27,5 @@ up ip route add 10.20.20.0/24 via 10.10.10.1 dev ens34
 up ip route add 192.168.93.0/24 via 10.10.10.1 dev ens34
 #down ip route del 192.168.93.0/24 via 10.10.10.1 dev ens34
 """ > /etc/network/interfaces
+
 sudo systemctl restart networking

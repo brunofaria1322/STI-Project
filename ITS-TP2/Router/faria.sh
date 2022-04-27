@@ -4,6 +4,7 @@ ip address flush dev ens36
 ip route flush dev ens33
 ip route flush dev ens34
 ip route flush dev ens36
+
 echo """
 source /etc/network/interfaces.d/*
 
@@ -27,4 +28,7 @@ iface ens36 inet static
     network 10.20.20.0
     netmask 255.255.255.0
 """ > /etc/network/interfaces
+
 sudo systemctl restart networking
+
+echo 1 > /proc/sys/net/ipv4/ip_forward

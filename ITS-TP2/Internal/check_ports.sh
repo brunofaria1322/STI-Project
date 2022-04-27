@@ -26,3 +26,5 @@ for port in $UDP_PORTS; do
         echo "❌ UDP - Port $port is closed";
     fi;
 done;
+
+#nc -n -w 1 $NETWORK 80
