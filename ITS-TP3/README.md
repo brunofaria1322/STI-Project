@@ -1,8 +1,8 @@
 ## Utils
 1. Download Docker:
-    1.1. Install Docker:
+    1. Install Docker:
         https://www.docker.com/products/docker-desktop/
-    1.2. Install Container:
+    2. Install Container:
         https://hub.docker.com/r/bkimminich/juice-shop
 2. Go to Server:
     http://192.168.93.1:3001/
