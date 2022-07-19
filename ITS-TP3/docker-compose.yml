@@ -1,0 +1,18 @@
+version: '3'
+name: 'WAF'
+services:
+  juiceshop:
+    image: bkimminich/juice-shop:latest
+    ports:
+      - 3000:3000
+    container_name: juiceshop
+  modsecurity:
+    image: owasp/modsecurity-crs:apache
+    ports:
+      - 80:80
+    container_name: modsecurity
+    environment:
+      - PROXY=1
+      - UPSTREAM=http://192.168.1.129:3000
+      - PARANOIA=3
+      - BACKEND=http://192.168.1.129:3000
