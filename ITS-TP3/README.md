@@ -2,9 +2,9 @@
 0. See WSTG
     
 1. Download Docker:
-    1.1. Install Docker:
+    1. Install Docker:
         https://www.docker.com/products/docker-desktop/
-    1.2. Install Container:
+    2. Install Container:
         https://hub.docker.com/r/bkimminich/juice-shop
         ```sh
         docker pull bkimminich/juice-shop
